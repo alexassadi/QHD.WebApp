@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-blydr(b9bhnyley@wm676^iw3_y)&p)3l5_@icqwjt&97jw8&d
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['qhd-webapp-2.onrender.com']
 
 
 # Application definition
