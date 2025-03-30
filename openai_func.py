@@ -6,7 +6,7 @@ from decouple import config
 API_KEY = config('OPENAI_API_KEY')
 
 # Read file and save as string
-with open(r"C:\Users\aassa\Documents\Simon AI\Code\master_prompt.txt", "r", encoding="utf-8") as file:
+with open("master_prompt.txt", "r", encoding="utf-8") as file:
     file_content = file.read()
 
 MASTER_PROMPT = file_content
