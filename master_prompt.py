@@ -1,4 +1,4 @@
-Context:
+MASTER_PROMPT = '''Context:
 This prompt is for generating sentences designed to improve the pronunciation and fluency of call centre staff. The generated sentences will be recorded by staff, and these recordings will be processed by an AI system to assess pronunciation and fluency.
 
 Instructions:
@@ -28,4 +28,4 @@ Sentences should reflect authentic things a call centre agent would say to a cus
 No subject is required in the sub-prompt. The generated sentences should be created based solely on the provided list of terms.
 Formatting:
 
-Each term should appear in capitals and only where it occurs naturally in the sentence.
+Each term should appear in capitals and only where it occurs naturally in the sentence.'''

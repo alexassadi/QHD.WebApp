@@ -2,14 +2,11 @@ import prompt
 import openai
 import re
 from decouple import config
+from master_prompt import MASTER_PROMPT
 
 API_KEY = config('OPENAI_API_KEY')
 
 # Read file and save as string
-with open("master_prompt.txt", "r", encoding="utf-8") as file:
-    file_content = file.read()
-
-MASTER_PROMPT = file_content
 
 def initial_prompt(vocab_list, quantity):
     # Set your API key
