@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Call Form</title>
+</head>
+<body>
+    <h1>API Call Form</h1>
+    
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if results %}
+        <h2>Results</h2>
+        <ul>
+        {% for result in results %}
+            <li>
+                <strong>Sentence:</strong> {{ result.expected_text }}<br>
+                <strong>Score:</strong> {{ result.overall_score }}
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>

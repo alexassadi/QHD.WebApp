@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="card">
+    <h1>🎯 Exercise Completed!</h1>
+    <p>Well done! You've successfully completed all 5 sentences.</p>
+    <form method="POST" action="{% url 'reset_progress' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">🔄 Restart Exercise</button>
+    </form>
+</div>
+{% endblock %}

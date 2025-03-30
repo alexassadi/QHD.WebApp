@@ -1,0 +1,41 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Generate Sentences
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>⚙️ Generate Sentences</h1>
+    <p>Generate practice sentences for your learning journey!</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Generate Sentences</button>
+    </form>
+</div>
+
+{% if sentences %}
+<div class="card">
+    <h2>📝 Generated Sentences</h2>
+    <ul>
+        {% for sentence in sentences %}
+            <li>{{ sentence }}</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'practice' %}" class="btn btn-success" style="padding: 10px 20px; text-decoration: none;">
+        ➡️ Practice Your Sentences
+    </a>
+</div>
+{% endif %}
+
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+        <p class="{{ message.tags }}">{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

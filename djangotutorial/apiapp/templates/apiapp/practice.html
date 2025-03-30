@@ -1,0 +1,179 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+    Pronunciation Practice
+{% endblock %}
+
+{% block content %}
+    <h1>Pronunciation Practice</h1>
+
+    <!-- Sentence Selection Form -->
+    <form method="POST">
+        {% csrf_token %}
+    
+        <label for="sentence_select">Choose a Sentence:</label>
+        <select name="sentence" id="sentence_select" required>
+            {% for key_term, sentences in grouped_sentences.items %}
+                <optgroup label="{{ key_term }}">
+                    {% for sentence in sentences %}
+                        <option value="{{ sentence.id }}">{{ sentence.text }}</option>
+                    {% endfor %}
+                </optgroup>
+            {% endfor %}
+        </select>
+    
+        <br><br>
+        <button type="submit">Select Sentence</button>
+    </form>
+
+    {% if sentence %}
+        <p><strong>Sentence to Practice:</strong> {{ sentence.text }}</p>
+
+        {% if fluent_audio_path %}
+            <h3>Listen to a Fluent Example:</h3>
+            <audio controls>
+                <source src="/{{ fluent_audio_path }}" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        {% endif %}
+
+        {% if show_speaker_gender %}
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <input type="hidden" name="sentence" value="{{ sentence.id }}">
+            
+            <!-- Speaker Gender Field -->
+            <label for="speaker_gender"><strong>Speaker Gender:</strong></label>
+            {{ form.speaker_gender }}
+
+            <!-- Recording Section -->
+            <h2>Record Your Attempt</h2>
+            <button id="recordButton" type="button">🎙️ Start Recording</button>
+            <button id="stopButton" type="button" disabled>⏹️ Stop Recording</button>
+
+            <p>Playback:</p>
+            <audio id="playback" controls></audio>
+
+            <!-- Hidden Field for Audio Data -->
+            <input type="hidden" name="audio_file" id="audioInput">
+            
+            <button type="submit">Submit Recording</button>
+        </form>
+        {% endif %}
+    {% endif %}
+
+    {% if score_data %}
+        <h2>Score Results</h2>
+        {% if score_data.error %}
+            <p>❌ {{ score_data.error }}</p>
+        {% else %}
+            <p><strong>Overall Score:</strong> {{ score_data.overall_score }}</p>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+    <script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("✅ DOM fully loaded");
+        
+            const recordButton = document.getElementById('recordButton');
+            const stopButton = document.getElementById('stopButton');
+            const playback = document.getElementById('playback');
+            const audioInput = document.getElementById('audioInput');
+        
+            console.log("✅ RecordRTC.js loaded:", typeof RecordRTC !== 'undefined');
+            console.log("✅ Record Button Found:", !!recordButton);
+            console.log("✅ Stop Button Found:", !!stopButton);
+        
+            if (!recordButton || !stopButton) {
+                console.error("❌ Buttons not found — Possible layout issue.");
+                return;
+            }
+        
+            let recorder;
+        
+            recordButton.addEventListener('click', async () => {
+                console.log("🎙️ Start Recording button clicked");
+        
+                try {
+                    const constraints = {
+                        audio: {
+                            sampleRate: 48000,
+                            channelCount: 1,
+                            echoCancellation: false,
+                            noiseSuppression: false,
+                            autoGainControl: false
+                        }
+                    };
+        
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    console.log("🎤 Microphone access granted");
+        
+                    recorder = new RecordRTC(stream, {
+                        type: 'audio',
+                        mimeType: 'audio/wav',
+                        recorderType: RecordRTC.StereoAudioRecorder,
+                        desiredSampRate: 16000
+                    });
+        
+                    recorder.startRecording();
+                    console.log("🔴 Recording has started");
+        
+                    recordButton.disabled = true;
+                    stopButton.disabled = false;
+        
+                } catch (error) {
+                    console.error("❌ Error accessing microphone:", error);
+                    alert("Error accessing your microphone. Please check permissions.");
+                }
+            });
+        
+            stopButton.addEventListener('click', async () => {
+                console.log("⏹️ Stop Recording button clicked");
+        
+                await recorder.stopRecording(() => {
+                    const audioBlob = recorder.getBlob();
+        
+                    if (audioBlob.size === 0) {
+                        console.error("❌ Audio file is empty or corrupt.");
+                        alert("Recording failed. Please try again.");
+                        return;
+                    }
+        
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    console.log("🎧 Audio file path:", audioUrl);
+        
+                    playback.src = audioUrl;
+        
+                    const reader = new FileReader();
+                    reader.readAsDataURL(audioBlob);
+        
+                    reader.onloadend = () => {
+                        const base64Audio = reader.result.split(',')[1];
+                        console.log("🎯 MP3 Base64 audio generated:", base64Audio.slice(0, 50));
+                        audioInput.value = base64Audio;
+                    };
+                });
+        
+                recordButton.disabled = false;
+                stopButton.disabled = true;
+            });
+        });
+        
+    </script>
+
+    <script>
+        // Detect if the page was refreshed
+        document.addEventListener('DOMContentLoaded', () => {
+            if (performance.navigation.type === 1) {
+                fetch("{% url 'practice' %}?reset_page=true", { method: 'GET' })
+                    .then(response => response.json())
+                    .then(data => console.log("🔄 Page refreshed — Reset triggered"));
+            }
+        });
+    </script>
+{% endblock %}
