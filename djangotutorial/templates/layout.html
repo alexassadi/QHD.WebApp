@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>
+        {% block title %}
+            Django App
+        {% endblock %}
+    </title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="{% static 'apiapp/css/style.css' %}">
+    <script src="{% static 'js/main.js' %}" defer></script>
+
+
+    <link rel="icon" href="{% static 'apiapp/images/favicon.ico' %}" type="image/x-icon">
+
+    <style>
+        body {
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        body.loaded {
+            opacity: 1;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.body.classList.add("loaded");
+        });
+    </script>    
+</head>
+<body>
+    <nav class="nav-menu">
+        <a href="/" class="nav-link">🏠 Home</a>
+        <a href="/about" class="nav-link">😀 About</a>
+        <a href="{% url 'generate' %}" class="nav-link">⚙️ Generate</a>
+        <a href="{% url 'practice' %}" class="nav-link">🗣️ Practice</a>
+    </nav>
+    <main>
+        {% block content %}
+        {% endblock %}
+        {% block extra_js %}
+        {% endblock %}
+    </main>
+</body>
+</html>
