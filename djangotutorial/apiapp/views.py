@@ -15,6 +15,7 @@ import random
 import uuid
 from django.core.files.storage import default_storage
 import requests
+from django.core.files.base import ContentFile
 
 # Add the utilities folder (2 levels up) to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -221,8 +222,14 @@ def practice_view2(request):
         highlighted_sentence = selected_sentence.text.replace(key_term, f"<strong>{key_term}</strong>")
 
         if request.session.get('cached_audio_path') is None:
-            fluent_audio_path = el.generate_audio_file(selected_sentence.text, 'EXAVITQu4vr4xnSDxMaL')
-            request.session['cached_audio_path'] = fluent_audio_path  # ✅ Store generated audio file path
+            audio_data = el.generate_audio_file(selected_sentence.text, 'EXAVITQu4vr4xnSDxMaL')
+    
+            # Upload to S3 using default_storage
+            filename = f"fluent_audio/fluent_{uuid.uuid4().hex}.mp3"
+            s3_path = default_storage.save(filename, ContentFile(audio_data))
+            fluent_audio_path = default_storage.url(s3_path)
+
+            request.session['cached_audio_path'] = fluent_audio_path
         else:
             fluent_audio_path = request.session['cached_audio_path']  # ✅ Use cached audio file
 
@@ -303,6 +310,15 @@ def save_audio(request):
             # ✅ Generate a unique filename
             unique_filename = f"recording_{uuid.uuid4().hex}.mp3"
 
+            # Create a ContentFile from the base64-decoded audio
+            audio_content = ContentFile(base64.b64decode(audio_base64))
+
+            # Save it to S3
+            s3_path = default_storage.save(unique_filename, audio_content)
+
+            # Get the public URL
+            public_url = default_storage.url(s3_path)
+
             # ✅ Define file path in static storage
             file_path = os.path.join('recordings', unique_filename)
             full_static_path = os.path.join(settings.STATIC_ROOT, file_path)
@@ -347,7 +363,8 @@ def save_audio(request):
                 return JsonResponse({
                     'success': True,
                     'score': score,
-                    'underlined_sentence': underlined_sentence
+                    'underlined_sentence': underlined_sentence,
+                    'audio_url': public_url
                 })
 
                 
@@ -383,12 +400,12 @@ def submit_recording(request):
 
             # Decode and save as MP3
             audio_data = base64.b64decode(base64_audio)
-            file_path = os.path.join(settings.STATIC_ROOT, 'recordings', 'recording_from_base64.mp3')
+            filename = f"recordings/recording_from_base64_{uuid.uuid4().hex}.mp3"
+            audio_content = ContentFile(audio_data)
+            s3_path = default_storage.save(filename, audio_content)
+            audio_url = default_storage.url(s3_path)
 
-            with open(file_path, 'wb') as audio_file:
-                audio_file.write(audio_data)
-
-            return JsonResponse({'success': True, 'file_path': f"/static/recordings/recording_from_base64.mp3"})
+            return JsonResponse({'success': True, 'file_path': audio_url})
         else:
             return JsonResponse({'success': False, 'error': 'No audio data received'})
         

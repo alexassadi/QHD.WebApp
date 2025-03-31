@@ -35,10 +35,6 @@ def generate_audio_file(text, voice_id):
 
     # Check for errors
     if response.status_code == 200:
-        # Save the audio response as an MP3 file
-        with open(AUDIO_FILE_PATH, "wb") as f:
-            f.write(response.content)
-        print(f"Audio saved as {AUDIO_FILE_PATH}")
+        return response.content  # return audio binary instead of saving to file
     else:
-        print(f"Error: {response.status_code} - {response.text}")
-    return '/'.join(AUDIO_FILE_PATH.split('/')[-2:])
+        raise Exception(f"Error generating audio: {response.status_code} - {response.text}")
