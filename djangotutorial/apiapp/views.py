@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 import subprocess
 from .models import Sentence
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 import re
 from collections import defaultdict
@@ -429,3 +429,9 @@ def generate_word_audio(request):
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method.'}, status=400)
+
+import subprocess
+
+def debug_static(request):
+    output = subprocess.check_output("find staticfiles/ -name '*.css'", shell=True).decode()
+    return HttpResponse(f"<pre>{output}</pre>")
