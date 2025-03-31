@@ -14,7 +14,8 @@ from pathlib import Path
 from decouple import config, Csv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = rf"{Path(__file__).resolve().parent.parent}\apiapp"
+print(BASE_DIR)
 
 
 # Quick-start development settings - unsuitable for production
