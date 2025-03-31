@@ -2,7 +2,6 @@ services:
   - type: web
     name: qhd-webapp
     env: python
-    plan: free  # optional — change if using paid tier
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
     startCommand: gunicorn apiapp.wsgi:application
     staticPublishPath: staticfiles
