@@ -25,7 +25,7 @@ print(BASE_DIR)
 SECRET_KEY = 'django-insecure-blydr(b9bhnyley@wm676^iw3_y)&p)3l5_@icqwjt&97jw8&d'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = False
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
