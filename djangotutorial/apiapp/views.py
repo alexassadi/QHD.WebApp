@@ -294,6 +294,8 @@ def completion_page(request):
     return render(request, 'apiapp/completion.html')
 
 def save_and_process_audio(request):
+    print("🔔 Entered save_and_process_audio view")
+
     if request.method == 'POST':
         print("🎧 Received audio POST request.")
         try:
@@ -386,7 +388,8 @@ def save_and_process_audio(request):
             print(f"❌ Error in save_audio view: {e}")
             traceback.print_exc()  # This prints the full error trace to the console
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
-
+        
+    print("🚫 Invalid request method.")
     return JsonResponse({'success': False, 'error': 'Invalid request method.'}, status=400)
 
 def submit_recording(request):
