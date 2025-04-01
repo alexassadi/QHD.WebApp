@@ -17,6 +17,7 @@ from django.core.files.storage import default_storage
 import requests
 from django.core.files.base import ContentFile
 from decouple import config
+import tempfile
 
 # Add the utilities folder (2 levels up) to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -291,7 +292,7 @@ def reset_progress(request):
 def completion_page(request):
     return render(request, 'apiapp/completion.html')
 
-def save_audio(request):
+def save_and_process_audio(request):
     if request.method == 'POST':
         try:
             audio_base64 = request.POST.get('audio_file')
@@ -307,64 +308,69 @@ def save_audio(request):
                 print("❌ STATIC_ROOT is not defined.")
                 return JsonResponse({'success': False, 'error': 'STATIC_ROOT is not defined.'}, status=500)
 
-            # ✅ Generate a unique filename
-            unique_filename = f"recording_{uuid.uuid4().hex}.mp3"
-
             # Create a ContentFile from the base64-decoded audio
-            audio_content = ContentFile(base64.b64decode(audio_base64))
+            audio_binary = base64.b64decode(audio_base64)
 
-            # Save it to S3
-            s3_path = default_storage.save(unique_filename, audio_content)
+            unique_id = uuid.uuid4().hex
+            original_key = f"audio/recordings/recording_{unique_id}.mp3"
+            converted_key = f"audio/recordings/converted_{unique_id}.mp3"
 
-            # Get the public URL
-            public_url = default_storage.url(s3_path)
+            # Save original audio to S3
+            s3_url = s3.export_result_to_s3(original_key, audio_binary, content_type='audio/mpeg')
 
-            # ✅ Define file path in static storage
-            file_path = os.path.join('recordings', unique_filename)
-            full_static_path = os.path.join(settings.STATIC_ROOT, file_path)
+            # Save original to temp file (for ffmpeg conversion)
+            with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as original_temp:
+                original_temp.write(audio_binary)
+                original_path = original_temp.name
 
-            # ✅ Ensure the 'recordings' folder exists
-            os.makedirs(os.path.dirname(full_static_path), exist_ok=True)
-
-            # ✅ Decode and save as MP3
-            with open(full_static_path, 'wb') as audio_file:
-                audio_file.write(base64.b64decode(audio_base64))
+            # Convert using ffmpeg to new temp file
+            with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as converted_temp:
+                converted_path = converted_temp.name
 
             try:
                 print("SCORING AUDIO")
-                converted_path = full_static_path.replace('recording_','converted_')
                 subprocess.run([
-                    "ffmpeg", "-i", full_static_path,
-                    "-ar", "48000",       # Higher sample rate
-                    "-ac", "1",           # Mono audio for clarity
-                    "-b:a", "192k",       # Higher bitrate for improved sound
-                    converted_path
-                ], check=True)
+                "ffmpeg", "-i", original_path,
+                "-ar", "48000",
+                "-ac", "1",
+                "-b:a", "192k",
+                converted_path
+            ], check=True)
 
-                with open(converted_path, "rb") as audio:
-                        audio_base64 = base64.b64encode(audio.read()).decode("utf-8")
+                # Read and re-encode converted file
+                with open(converted_path, "rb") as f:
+                    converted_audio_binary = f.read()
 
-                selected_sentence = Sentence.objects.get(id=sentence_id)
-                json_result = lc.generate_pronunciation_score(audio_base64, selected_sentence.text, 'male', 'adult')
-                score_data = json.loads(json_result)
+                # Save converted audio to S3
+                converted_url = s3.export_result_to_s3(converted_key, converted_audio_binary, content_type='audio/mpeg')
+
+                # Encode to base64 for LC
+                converted_audio_base64 = base64.b64encode(converted_audio_binary).decode("utf-8")
+
+                # Get sentence
+                sentence = Sentence.objects.get(id=sentence_id)
+
+                # Score with Language Confidence
+                result_json = lc.generate_pronunciation_score(
+                    converted_audio_base64, sentence.text, 'male', 'adult'
+                )
+                score_data = json.loads(result_json)
                 score = score_data["overall_score"]
-                print(score_data)
 
                 # ✅ Extract and sort lowest scoring words
                 sorted_words = sorted(score_data["words"], key=lambda x: x["word_score"])
                 lowest_words = [word["word_text"] for word in sorted_words[:3]]
                 print(lowest_words)
 
-                underlined_sentence = selected_sentence.text
+                underlined_sentence = sentence.text
                 for word in lowest_words:
                     underlined_sentence = underlined_sentence.replace(f' {word} ', f"<span class='clickable-word' data-word='{word}'> <u>{word}</u> </span>", 1)
 
-                print(f"✅ Audio successfully saved at: {full_static_path}")
                 return JsonResponse({
                     'success': True,
                     'score': score,
                     'underlined_sentence': underlined_sentence,
-                    'audio_url': public_url
+                    'audio_url': converted_url
                 })
 
                 
@@ -372,7 +378,7 @@ def save_audio(request):
                 print("ERROR SCORING AUDIO")
                 score = "Error: Sentence not found."
 
-            print(f"✅ Audio successfully saved at: {full_static_path}")
+            print(f"✅ Audio successfully saved at: {converted_url}")
             return JsonResponse({
                 'success': True,
                 'score': score
