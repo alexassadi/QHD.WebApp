@@ -329,13 +329,19 @@ def save_and_process_audio(request):
 
             try:
                 print("SCORING AUDIO")
-                subprocess.run([
-                "ffmpeg", "-i", original_path,
-                "-ar", "48000",
-                "-ac", "1",
-                "-b:a", "192k",
-                converted_path
-            ], check=True)
+                try:
+                    subprocess.run([
+                        "ffmpeg", "-i", original_path,
+                        "-ar", "48000",
+                        "-ac", "1",
+                        "-b:a", "192k",
+                        converted_path
+                    ], check=True, capture_output=True, text=True)
+                except subprocess.CalledProcessError as e:
+                    print("❌ FFMPEG failed!")
+                    print("STDERR:", e.stderr)
+                    print("STDOUT:", e.stdout)
+                    raise
 
                 # Read and re-encode converted file
                 with open(converted_path, "rb") as f:
