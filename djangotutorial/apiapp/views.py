@@ -331,7 +331,9 @@ def save_and_process_audio(request):
                 print("SCORING AUDIO")
                 try:
                     subprocess.run([
-                        "ffmpeg", "-i", original_path,
+                        "ffmpeg", 
+                        "-y",
+                        "-i", original_path,
                         "-ar", "48000",
                         "-ac", "1",
                         "-b:a", "192k",
