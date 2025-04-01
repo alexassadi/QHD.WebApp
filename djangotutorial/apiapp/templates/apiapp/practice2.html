@@ -211,7 +211,7 @@
                         const formData = new FormData();
                         formData.append('audio_file', base64Audio);
     
-                        const response = await fetch("{% url 'save_audio' %}", {
+                        const response = await fetch("{% url 'save_and_process_audio' %}", {
                             method: 'POST',
                             body: new URLSearchParams({
                                 'audio_file': base64Audio,
