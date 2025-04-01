@@ -38,13 +38,13 @@
             <button id="listenAgainButton">Listen Again</button>
             <div class="microphone-container">
                 <button id="recordButton" class="microphone-button">
-                    <img id="microphoneIcon" src="{% static 'images/microphone.png' %}" 
+                    <img id="microphoneIcon" src="https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/microphone.png" 
                          alt="Microphone Icon" width="80">
                 </button>
 
                 <!-- Spinner and Score Display -->
             <div id="loadingSpinner" style="display: none;">
-                <img src="{% static 'images/loading_spinner.gif' %}" alt="Loading..." width="300">
+                <img src="https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/loading_spinner.gif" alt="Loading..." width="300">
             </div>
 
             <div id="scoreDisplay" style="display: none;">
@@ -56,7 +56,7 @@
             </div>
         {% endif %}
 
-        <audio id="fluentAudio" controls>
+        <audio id="fluentAudio">
             <source src="{{ fluent_audio_path }}" type="audio/mpeg">
             Your browser does not support the audio element.
         </audio>
@@ -163,7 +163,7 @@
         recordButton?.addEventListener('click', async () => {
             if (!isRecording) {
                 console.log("🎙️ Recording started...");
-                microphoneIcon.src = "{% static 'images/microphone_red.png' %}";
+                microphoneIcon.src = "https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/microphone_red.png";
                 isRecording = true;
     
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -178,7 +178,7 @@
                 recorder.startRecording();
             } else {
                 console.log("⏹️ Recording stopped.");
-                microphoneIcon.src = "{% static 'images/microphone.png' %}";
+                microphoneIcon.src = "https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/microphone.png";
                 isRecording = false;
     
                 recorder.stopRecording(() => {
