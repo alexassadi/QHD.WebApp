@@ -16,7 +16,7 @@ import uuid
 from django.core.files.storage import default_storage
 import requests
 from django.core.files.base import ContentFile
-import s3_func as s3
+from decouple import config
 
 # Add the utilities folder (2 levels up) to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -25,7 +25,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 import openai_func as oa
 import elevenlabs_func as el
 import languageconfidence_func as lc
-from decouple import config
+import s3_func as s3
 
 # OpenAI API Configuration
 OPENAI_API_KEY = config('OPENAI_API_KEY')
@@ -224,7 +224,7 @@ def practice_view2(request):
 
         if request.session.get('cached_audio_path') is None:
             audio_data = el.generate_audio_file(selected_sentence.text, 'EXAVITQu4vr4xnSDxMaL')
-            
+
             # Upload to S3 using default_storage
             key = f"audio/fluent_audio/fluent_{uuid.uuid4().hex}.mp3"
             fluent_audio_path = s3.export_result_to_s3(key, audio_data)
