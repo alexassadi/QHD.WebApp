@@ -434,11 +434,12 @@ def generate_word_audio(request):
 
         try:
             # ✅ Generate the MP3 file
-            audio_path = el.generate_audio_file(word, 'EXAVITQu4vr4xnSDxMaL')
+            audio_b64 = el.generate_audio_file(word, 'EXAVITQu4vr4xnSDxMaL')
+
+            s3_key = f'audio/words/word_{uuid.uuid4().hex}.mp3'
 
             # ✅ Return the URL for playback
-            relative_path = os.path.relpath(audio_path, settings.STATIC_ROOT)
-            audio_url = f"/static/{relative_path.replace(os.path.sep, '/')}"  # Correct path formatting for web
+            audio_url = s3.export_result_to_s3(s3_key, audio_b64, 'audio/mpeg')
             return JsonResponse({'success': True, 'audio_url': audio_url})
 
         except Exception as e:
