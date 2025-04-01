@@ -18,6 +18,7 @@ import requests
 from django.core.files.base import ContentFile
 from decouple import config
 import tempfile
+import traceback
 
 # Add the utilities folder (2 levels up) to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -386,6 +387,7 @@ def save_and_process_audio(request):
 
         except Exception as e:
             print(f"❌ Error in save_audio view: {e}")
+            traceback.print_exc()  # This prints the full error trace to the console
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
     return JsonResponse({'success': False, 'error': 'Invalid request method.'}, status=400)
