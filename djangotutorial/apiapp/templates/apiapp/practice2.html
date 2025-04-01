@@ -56,8 +56,8 @@
             </div>
         {% endif %}
 
-        <audio id="fluentAudio">
-            <source src="/{{ fluent_audio_path }}" type="audio/mpeg">
+        <audio id="fluentAudio" controls>
+            <source src="{{ fluent_audio_path }}" type="audio/mpeg">
             Your browser does not support the audio element.
         </audio>
     </div>

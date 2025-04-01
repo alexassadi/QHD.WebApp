@@ -227,7 +227,7 @@ def practice_view2(request):
 
             # Upload to S3 using default_storage
             key = f"audio/fluent_audio/fluent_{uuid.uuid4().hex}.mp3"
-            fluent_audio_path = s3.export_result_to_s3(key, audio_data)
+            fluent_audio_path = s3.export_result_to_s3(key, audio_data, 'audio/mpeg')
 
             request.session['cached_audio_path'] = fluent_audio_path
         else:
