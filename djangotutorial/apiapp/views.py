@@ -16,6 +16,7 @@ import uuid
 from django.core.files.storage import default_storage
 import requests
 from django.core.files.base import ContentFile
+import s3_func as s3
 
 # Add the utilities folder (2 levels up) to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -223,11 +224,10 @@ def practice_view2(request):
 
         if request.session.get('cached_audio_path') is None:
             audio_data = el.generate_audio_file(selected_sentence.text, 'EXAVITQu4vr4xnSDxMaL')
-    
+            
             # Upload to S3 using default_storage
-            filename = f"fluent_audio/fluent_{uuid.uuid4().hex}.mp3"
-            s3_path = default_storage.save(filename, ContentFile(audio_data))
-            fluent_audio_path = default_storage.url(s3_path)
+            key = f"audio/fluent_audio/fluent_{uuid.uuid4().hex}.mp3"
+            fluent_audio_path = s3.export_result_to_s3(key, audio_data)
 
             request.session['cached_audio_path'] = fluent_audio_path
         else:

@@ -10,8 +10,6 @@ OUTPUT_FILE = "Audio/Test/test1.wav"
 def generate_audio_file(text, voice_id):
     # Path to save generated audio
     unique_id = str(uuid.uuid4())[:8]
-    AUDIO_FILE_PATH = f"C:/Users/aassa/Documents/Simon AI/Code/djangotutorial/static/fluent_audio_{unique_id}.mp3"
-
     URL = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
 
     # Headers for authentication
