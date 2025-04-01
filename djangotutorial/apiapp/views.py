@@ -295,19 +295,16 @@ def completion_page(request):
 
 def save_and_process_audio(request):
     if request.method == 'POST':
+        print("🎧 Received audio POST request.")
         try:
             audio_base64 = request.POST.get('audio_file')
             sentence_id = request.POST.get('sentence_id')
+            print(f"🔍 Received sentence ID: {sentence_id}")
 
             # ✅ Confirm data is received
             if not audio_base64:
                 print("❌ No audio data received.")
                 return JsonResponse({'success': False, 'error': 'No audio data received.'}, status=400)
-
-            # ✅ Ensure STATIC_ROOT is defined
-            if not settings.STATIC_ROOT:
-                print("❌ STATIC_ROOT is not defined.")
-                return JsonResponse({'success': False, 'error': 'STATIC_ROOT is not defined.'}, status=500)
 
             # Create a ContentFile from the base64-decoded audio
             audio_binary = base64.b64decode(audio_base64)
