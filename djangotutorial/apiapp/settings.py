@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'posts',
-    'apiapp'
+    'apiapp',
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -125,7 +126,7 @@ if not DEBUG:    # Tell Django to copy static assets into a path called `staticf
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     # Enable the WhiteNoise storage backend, which compresses static files to reduce disk use
     # and renames the files with unique names for each version to support long-term caching
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'apiapp', 'static', 'apiapp')
@@ -147,3 +148,4 @@ AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
 AWS_S3_REGION_NAME = 'eu-west-2' 
 AWS_QUERYSTRING_AUTH = False  # public URLs
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
