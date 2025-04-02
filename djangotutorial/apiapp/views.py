@@ -63,133 +63,9 @@ def generate_sentences(request):
 
     return render(request, 'apiapp/generate_sentences.html', {'form': form, 'sentences': sentences})
 
-def practice_view(request):
-    score_data = None
-    selected_sentence = None
-    fluent_audio_path = None
-    show_speaker_gender = False
-    uid = None
-    grouped_sentences = defaultdict(list)
-
-    # Extract sentences and group by key term (capitalized word)
-    sentences = Sentence.objects.all()
-    for sentence in sentences:
-        match = re.search(r'\b[A-Z]{2,}\b', sentence.text)  # Detect capitalized word
-        key_term = match.group(0) if match else "Other"
-        grouped_sentences[key_term].append(sentence)
-
-    # Clear session data only if `reset_page=true` is detected (Page Refresh)
-    if request.GET.get('reset_page') == 'true':
-        request.session.clear()
-        print("🔄 Page refreshed — Session data cleared")
-        return JsonResponse({'status': 'reset'})
-
-    if 'selected_sentence_id' in request.session:
-        try:
-            selected_sentence = Sentence.objects.get(id=request.session['selected_sentence_id'])
-            fluent_audio_path = request.session.get('fluent_audio_path')
-            show_speaker_gender = True
-        except Sentence.DoesNotExist:
-            selected_sentence = None
-
-    # Handle Pronunciation Submission
-    if request.method == 'POST':
-        form = PronunciationForm(request.POST, request.FILES)
-
-        if 'sentence' in request.POST and 'speaker_gender' not in request.POST:
-            if form.is_valid():
-            # Correctly retrieve sentence ID for the form
-                sentence_id = request.POST.get('sentence')
-                try:
-                    selected_sentence = Sentence.objects.get(id=sentence_id)
-                except Sentence.DoesNotExist:
-                    selected_sentence = None
-
-                if selected_sentence:
-                    selected_sentence = form.cleaned_data['sentence']
-                    fluent_audio_path = el.generate_audio_file(selected_sentence.text, 'EXAVITQu4vr4xnSDxMaL')
-
-                    uid = fluent_audio_path.split('_')[-1][:-4]
-
-                    if 'audio_files' not in request.session:
-                        request.session['audio_files'] = []
-                    request.session['audio_files'].append(fluent_audio_path)
-
-                    print(f"✅ Fluent audio file generated: {fluent_audio_path}")
-                    show_speaker_gender = True  # Show the speaker gender field after sentence selection
-                    form = PronunciationForm(initial={'sentence': selected_sentence.id})
-
-        elif 'speaker_gender' in request.POST:
-            print("🔎 Speaker gender selection process started")
-            if form.is_valid():
-                print("✅ Form data is valid")
-                selected_sentence = form.cleaned_data['sentence']
-                speaker_gender = form.cleaned_data['speaker_gender']
-                audio_base64 = form.cleaned_data['audio_file']
-                #print(audio_base64)
-
-                # Decode Base64 back into MP3 file
-                mp3_data = base64.b64decode(audio_base64)
-                mp3_file_path = f"static/recording_{uid}.mp3"
-
-                # Save MP3 file for debugging (optional)
-                with open(mp3_file_path, "wb") as mp3_file:
-                    mp3_file.write(mp3_data)
-
-                request.session['audio_files'].append(mp3_file_path)
-
-                subprocess.run([
-                    "ffmpeg", "-i", mp3_file_path,
-                    "-ar", "48000",       # Higher sample rate
-                    "-ac", "1",           # Mono audio for clarity
-                    "-b:a", "192k",       # Higher bitrate for improved sound
-                    f"converted_audio_{uid}.mp3"
-                ], check=True)
-
-                request.session['audio_files'].append(f"converted_audio_{uid}.mp3")
-
-                with open(f"converted_audio_{uid}.mp3", "rb") as audio:
-                        audio_base64 = base64.b64encode(audio.read()).decode("utf-8")
-                
-
-                # Send uploaded audio to LanguageConfidence API for scoring
-                print("🟩 Sending Data to API:", score_data)
-                json_result, uid  = lc.generate_pronunciation_score(audio_base64, selected_sentence.text, speaker_gender, 'adult')
-
-                score_data = json.loads(json_result)
-
-                request.session['delete_audio_after_score'] = True
-                
-            else:
-                print("❌ Form data is invalid:", form.errors)
-
-    else:
-        form = PronunciationForm()
-
-    if request.session.get('delete_audio_after_score'):
-        if 'audio_files' in request.session:
-            for file_path in request.session['audio_files']:
-                full_path = os.path.join(settings.BASE_DIR, file_path)
-                if os.path.exists(full_path):
-                    os.remove(full_path)
-                    print(f"🗑️ Deleted audio file: {full_path}")
-            request.session.pop('audio_files', None)
-            request.session.pop('delete_audio_after_score', None)
-
-    return render(request, 'apiapp/practice.html', {
-        'sentence': selected_sentence,
-        
-        'form': form,
-        'score_data': score_data,
-        'fluent_audio_path': fluent_audio_path,
-        'show_speaker_gender': show_speaker_gender,
-        'grouped_sentences': dict(grouped_sentences)
-    })
-
-
 import random  # Import to pick random sentences
 
-def practice_view2(request):
+def practice_view(request):
     form = PracticeForm()
     score = None
     selected_sentence = None
@@ -254,7 +130,7 @@ def practice_view2(request):
             request.session['ready_for_next_sentence'] = False
             request.session['cached_audio_path'] = None
             request.session.modified = True  # ✅ Force session to save
-            return redirect('practice2')  # ✅ Redirect to refresh the sentence display
+            return redirect('practice')  # ✅ Redirect to refresh the sentence display
 
     except Sentence.DoesNotExist:
         selected_sentence = None
@@ -262,7 +138,7 @@ def practice_view2(request):
         highlighted_sentence = ""
 
 
-    return render(request, 'apiapp/practice2.html', {
+    return render(request, 'apiapp/practice.html', {
         'sentence': selected_sentence,
         'key_term': key_term,
         'fluent_audio_path': fluent_audio_path,
@@ -288,7 +164,7 @@ def reset_progress(request):
     request.session['cached_audio_path'] = None
 
     # Redirect back to the practice page
-    return redirect('practice2')
+    return redirect('practice')
 
 def completion_page(request):
     return render(request, 'apiapp/completion.html')
