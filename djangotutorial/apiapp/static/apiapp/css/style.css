@@ -31,10 +31,10 @@ h1, h2 {
 
 /* === BUTTONS === */
 button {
-    background-color: var(--primary-green);
-    color: #ffffff;
+    background-color: #ffffff;
+    color: #000000;
     border: none;
-    border-radius: 25px;
+    border-radius: 0;
     padding: 12px 24px;
     font-weight: 600;
     cursor: pointer;
@@ -42,7 +42,7 @@ button {
 }
 
 button:hover {
-    background-color: var(--secondary-blue);
+    background-color: #b1b1b1;
     transform: scale(1.05);
 }
 
