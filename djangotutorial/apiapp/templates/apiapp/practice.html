@@ -79,7 +79,7 @@
 
 <form method="POST" action="{% url 'reset_progress' %}">
     {% csrf_token %}
-    <button type="submit" class="btn btn-danger" style="margin-top: 10px">Restart Exercise</button>
+    <button type="submit" class="btn btn-danger" id = "restartExerciseButton" style="margin-top: 10px">Restart Exercise</button>
 </form>
 
 <input type="hidden" id="sentenceId" value="{{ sentence.id }}">
