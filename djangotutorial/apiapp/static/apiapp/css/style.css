@@ -5,10 +5,8 @@
 }
 
 :root {
-    --primary-green: #bac937;
-    --secondary-blue: #1cb0f6;
-    --soft-yellow: #ffdc5e;
-    --dark-text: #2b2b2b;
+    --black: #000000;
+    --grey: #b1b1b1;
     --light-bg: #f0f4f8;
     --card-bg: #ffffff;
 }
@@ -17,13 +15,13 @@
 body {
     font-family: 'Poppins', sans-serif;
     background-color: var(--light-bg);
-    color: var(--dark-text);
+    color: var(--black);
     padding: 20px;
 }
 
 /* === HEADINGS === */
 h1, h2 {
-    color: var(--primary-green);
+    color: var(--black);
     text-align: center;
     font-weight: 700;
     margin-bottom: 20px;
@@ -48,7 +46,7 @@ button:hover {
 
 /* === FORM FIELDS === */
 form input, select {
-    border: 2px solid var(--primary-green);
+    border: 2px solid var(--black);
     border-radius: 20px;
     padding: 10px 15px;
     width: 100%;
@@ -58,7 +56,7 @@ form input, select {
 }
 
 form input:focus, select:focus {
-    border-color: var(--secondary-blue);
+    border-color: var(--grey);
     background-color: #e6f7ff;
 }
 
@@ -109,7 +107,7 @@ form input:focus, select:focus {
 
 /* === MESSAGES (FEEDBACK) === */
 .messages p {
-    background-color: var(--primary-green);
+    background-color: var(--black);
     color: #ffffff;
     padding: 10px;
     border-radius: 15px;
@@ -120,7 +118,7 @@ form input:focus, select:focus {
 /* === Progress Bar === */
 .progress-heading {
     text-align: center;
-    color: #a3c400;
+    color: #000000;
     font-weight: 700;
     font-size: 1.5rem;
 }
