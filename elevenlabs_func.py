@@ -4,7 +4,7 @@ from decouple import config, Csv
 
 API_KEY = config('ELEVEN_LABS_API_KEY')
 
-VOICE_ID = "EXAVITQu4vr4xnSDxMaL"
+VOICE_ID = "9x3LCv1U6rJuU05dIEO3"
 OUTPUT_FILE = "Audio/Test/test1.wav"
 
 def generate_audio_file(text, voice_id):
@@ -24,7 +24,8 @@ def generate_audio_file(text, voice_id):
         "model_id": "eleven_monolingual_v1",  # Model for English text-to-speech
         "voice_settings": {
             "stability": 0.5,  # Adjust voice stability (0.0 - 1.0)
-            "similarity_boost": 0.8  # Adjust similarity boost (0.0 - 1.0)
+            "similarity_boost": 0.8,  # Adjust similarity boost (0.0 - 1.0)
+            "speed": 0.85
         }
     }
 

@@ -101,7 +101,7 @@ def practice_view(request):
         highlighted_sentence = selected_sentence.text.replace(key_term, f"<strong>{key_term}</strong>")
 
         if request.session.get('cached_audio_path') is None:
-            audio_data = el.generate_audio_file(selected_sentence.text, 'EXAVITQu4vr4xnSDxMaL')
+            audio_data = el.generate_audio_file(selected_sentence.text, '9x3LCv1U6rJuU05dIEO3')
 
             # Upload to S3 using default_storage
             key = f"audio/fluent_audio/fluent_{uuid.uuid4().hex}.mp3"
