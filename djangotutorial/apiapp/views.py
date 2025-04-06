@@ -101,12 +101,7 @@ def practice_view(request):
         highlighted_sentence = selected_sentence.text.replace(key_term, f"<strong>{key_term}</strong>")
 
         if request.session.get('cached_audio_path') is None:
-            audio_data = el.generate_audio_file(selected_sentence.text, '9x3LCv1U6rJuU05dIEO3')
-
-            # Upload to S3 using default_storage
-            key = f"audio/fluent_audio/fluent_{uuid.uuid4().hex}.mp3"
-            fluent_audio_path = s3.export_result_to_s3(key, audio_data, 'audio/mpeg')
-
+            fluent_audio_path = selected_sentence.audio_url  # Already saved in the model
             request.session['cached_audio_path'] = fluent_audio_path
         else:
             fluent_audio_path = request.session['cached_audio_path']  # ✅ Use cached audio file
@@ -310,7 +305,7 @@ def generate_word_audio(request):
 
         try:
             # ✅ Generate the MP3 file
-            audio_b64 = el.generate_audio_file(word, 'EXAVITQu4vr4xnSDxMaL')
+            audio_b64 = el.generate_audio_file(word)
 
             s3_key = f'audio/words/word_{uuid.uuid4().hex}.mp3'
 

@@ -7,10 +7,10 @@ API_KEY = config('ELEVEN_LABS_API_KEY')
 VOICE_ID = "9x3LCv1U6rJuU05dIEO3"
 OUTPUT_FILE = "Audio/Test/test1.wav"
 
-def generate_audio_file(text, voice_id):
+def generate_audio_file(text):
     # Path to save generated audio
     unique_id = str(uuid.uuid4())[:8]
-    URL = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+    URL = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}"
 
     # Headers for authentication
     headers = {
