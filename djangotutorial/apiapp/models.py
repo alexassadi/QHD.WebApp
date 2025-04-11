@@ -13,7 +13,7 @@ import s3_func as s3
 class Sentence(models.Model):
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-    '''audio_url = models.CharField(max_length=255, blank=True, null=True)
+    audio_url = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return self.text  # Display part of the sentence in the admin panel
@@ -29,4 +29,3 @@ class Sentence(models.Model):
             self.audio_url = fluent_audio_url
 
         super().save(*args, **kwargs)
-'''
