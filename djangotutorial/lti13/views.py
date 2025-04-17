@@ -5,9 +5,11 @@ from pylti1p3.tool_config import ToolConfJsonFile
 from pylti1p3.message_launch import MessageLaunch
 from .adapters import DjangoRequest
 from .storage import DjangoSessionLaunchDataStorage
+from django.views.decorators.csrf import csrf_exempt
 
 TOOL_CONFIG_FILE = 'path/to/tool_config.json'
 
+@csrf_exempt
 def lti13_login(request):
     django_request = DjangoRequest(request)
     tool_conf = ToolConfJsonFile(TOOL_CONFIG_FILE)
@@ -17,6 +19,7 @@ def lti13_login(request):
         .enable_check_cookies()\
         .get_redirect()
 
+@csrf_exempt
 def lti13_launch(request):
     django_request = DjangoRequest(request)
     tool_conf = ToolConfJsonFile(TOOL_CONFIG_FILE)
