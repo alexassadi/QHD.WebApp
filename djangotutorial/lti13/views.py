@@ -7,6 +7,7 @@ from .adapters import DjangoRequest
 from .storage import DjangoSessionLaunchDataStorage
 from django.views.decorators.csrf import csrf_exempt
 import os
+from .cookies import DjangoCookieService
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TOOL_CONFIG_FILE = os.path.join(BASE_DIR, 'lti13', 'tool_config.json')
@@ -17,9 +18,12 @@ def lti13_login(request):
     tool_conf = ToolConfJsonFile(TOOL_CONFIG_FILE)
     launch_data_storage = DjangoSessionLaunchDataStorage(request)
 
-    return MessageLaunch(django_request, tool_conf, launch_data_storage)\
-        .enable_check_cookies()\
-        .get_redirect()
+    cookie_service = DjangoCookieService(request)
+    return MessageLaunch(
+        django_request, tool_conf, launch_data_storage
+    ).enable_check_cookies()\
+     .set_cookie_service(cookie_service)\
+     .get_redirect()
 
 @csrf_exempt
 def lti13_launch(request):
@@ -34,6 +38,15 @@ def lti13_launch(request):
     request.session['user_id'] = data.get('sub')
     request.session['roles'] = data.get('https://purl.imsglobal.org/spec/lti/claim/roles', [])
     request.session['name'] = data.get('name')
+
+    cookie_service = DjangoCookieService(request)
+
+    message_launch = MessageLaunch(
+        django_request, tool_conf, launch_data_storage
+    ).set_cookie_service(cookie_service)\
+     .validate_registration().validate()
+
+    data = message_launch.get_launch_data()
 
     return render(request, 'apiapp/practice.html', {
     'user_id': request.session.get('user_id'),
