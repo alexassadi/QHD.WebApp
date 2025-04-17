@@ -1,8 +1,6 @@
-# lti13/storage.py
+from pylti1p3.launch_data_storage.base import LaunchDataStorage
 
-from pylti1p3.launch_data_storage.session import SessionLaunchDataStorage
-
-class DjangoSessionLaunchDataStorage(SessionLaunchDataStorage):
+class DjangoSessionLaunchDataStorage(LaunchDataStorage):
     def __init__(self, request):
         self._session = request.session
 
@@ -13,4 +11,5 @@ class DjangoSessionLaunchDataStorage(SessionLaunchDataStorage):
         return self._session.get(f"lti_launch_{launch_id}")
 
     def delete_launch_data(self, launch_id):
-        self._session.pop(f"lti_launch_{launch_id}", None)
+        if f"lti_launch_{launch_id}" in self._session:
+            del self._session[f"lti_launch_{launch_id}"]
