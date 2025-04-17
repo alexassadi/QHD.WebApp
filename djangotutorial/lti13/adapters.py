@@ -8,6 +8,7 @@ class DjangoRequest(Request):
         return self._request.is_secure()
 
     def get_param(self, name):
+        # This is the method that caused the NotImplementedError
         return self._request.POST.get(name) or self._request.GET.get(name)
 
     def get_cookie(self, name):
