@@ -1,0 +1,12 @@
+<h2>LTI Test Launcher</h2>
+<form method="post" action="{% url 'lti_launch' %}">
+    <input type="hidden" name="lti_message_type" value="basic-lti-launch-request">
+    <input type="hidden" name="lti_version" value="LTI-1p0">
+    <input type="hidden" name="resource_link_id" value="res-12345">
+    <input type="hidden" name="user_id" value="user@example.com">
+    <input type="hidden" name="roles" value="Learner">
+    <input type="hidden" name="context_id" value="course-v1:test+course">
+    <input type="hidden" name="oauth_consumer_key" value="test_consumer_key">
+    <!-- Skipping signature for test -->
+    <button type="submit">Launch</button>
+</form>

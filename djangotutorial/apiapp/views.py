@@ -19,6 +19,7 @@ from django.core.files.base import ContentFile
 from decouple import config
 import tempfile
 import traceback
+from django.contrib.auth.decorators import login_required
 
 # Add the utilities folder (2 levels up) to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -35,6 +36,13 @@ ELEVENLABS_API_KEY = config('ELEVEN_LABS_API_KEY')
 LANGUAGECONFIDENCE_API_KEY = config('LANGUAGE_CONFIDENCE_API_KEY')
 
 MP3_FILEPATH = None
+
+def dashboard(request):
+    user_id = request.session.get('user_id')
+    context = {
+        'user_id': user_id,
+    }
+    return render(request, 'apiapp/practice.html', context)
 
 def generate_sentences(request):
     sentences = []  # Stores final API results for display

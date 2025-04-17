@@ -26,4 +26,5 @@ urlpatterns = [
     path("posts/", include('posts.urls')),
     path('', include('apiapp.urls')),
     path('favicon.ico', RedirectView.as_view(url='/static/images/favicon.ico', permanent=True)),
+    path('lti/', include('ltiapp.urls')),
 ]
