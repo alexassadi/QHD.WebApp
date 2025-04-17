@@ -8,7 +8,6 @@ from .storage import DjangoSessionLaunchDataStorage
 from django.views.decorators.csrf import csrf_exempt
 import os
 from .cookies import DjangoCookieService
-from .adapters import DjangoRequest
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TOOL_CONFIG_FILE = os.path.join(BASE_DIR, 'lti13', 'tool_config.json')

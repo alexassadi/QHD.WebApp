@@ -9,8 +9,9 @@ class DjangoRequest(Request):
         return self._request.is_secure()
 
     def get_param(self, name):
-        # Fixes NotImplementedError for request parameters like 'state', 'id_token'
+        print(f"✅ get_param({name}) called")
         return self._request.POST.get(name, None) or self._request.GET.get(name, None)
+
 
     def get_cookie(self, name):
         return self._request.COOKIES.get(name)
