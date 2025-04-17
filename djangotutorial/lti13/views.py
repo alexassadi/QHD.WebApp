@@ -8,6 +8,7 @@ from .storage import DjangoSessionLaunchDataStorage
 from django.views.decorators.csrf import csrf_exempt
 import os
 from .cookies import DjangoCookieService
+from .adapters import DjangoRequest
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TOOL_CONFIG_FILE = os.path.join(BASE_DIR, 'lti13', 'tool_config.json')
@@ -27,7 +28,7 @@ def lti13_login(request):
 
 @csrf_exempt
 def lti13_launch(request):
-    django_request = DjangoRequest(request)
+    django_request = DjangoRequest(request)  # 👈 This is crucial
     tool_conf = ToolConfJsonFile(TOOL_CONFIG_FILE)
     launch_data_storage = DjangoSessionLaunchDataStorage(request)
     cookie_service = DjangoCookieService(request)
@@ -39,6 +40,7 @@ def lti13_launch(request):
         cookie_service=cookie_service
     ).validate_registration().validate()
 
+    # Get data from JWT
     data = message_launch.get_launch_data()
 
     request.session['user_id'] = data.get('sub')
@@ -50,7 +52,6 @@ def lti13_launch(request):
         'name': request.session.get('name'),
         'roles': request.session.get('roles'),
     })
-
 
 from django.http import JsonResponse
 import os
