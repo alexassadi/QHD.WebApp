@@ -30,29 +30,27 @@ def lti13_launch(request):
     django_request = DjangoRequest(request)
     tool_conf = ToolConfJsonFile(TOOL_CONFIG_FILE)
     launch_data_storage = DjangoSessionLaunchDataStorage(request)
+    cookie_service = DjangoCookieService(request)
 
-    message_launch = MessageLaunch(django_request, tool_conf, launch_data_storage)
-    data = message_launch.validate_registration().validate().get_launch_data()
+    message_launch = MessageLaunch(
+        django_request,
+        tool_conf,
+        launch_data_storage,
+        cookie_service=cookie_service
+    ).validate_registration().validate()
 
-    # Save user info
+    data = message_launch.get_launch_data()
+
     request.session['user_id'] = data.get('sub')
     request.session['roles'] = data.get('https://purl.imsglobal.org/spec/lti/claim/roles', [])
     request.session['name'] = data.get('name')
 
-    cookie_service = DjangoCookieService(request)
-
-    message_launch = MessageLaunch(
-        django_request, tool_conf, launch_data_storage
-    ).set_cookie_service(cookie_service)\
-     .validate_registration().validate()
-
-    data = message_launch.get_launch_data()
-
     return render(request, 'apiapp/practice.html', {
-    'user_id': request.session.get('user_id'),
-    'name': request.session.get('name'),
-    'roles': request.session.get('roles'),
+        'user_id': request.session.get('user_id'),
+        'name': request.session.get('name'),
+        'roles': request.session.get('roles'),
     })
+
 
 from django.http import JsonResponse
 import os
