@@ -2,7 +2,7 @@ from django.shortcuts import render
 import json
 from django.http import HttpResponseRedirect, HttpResponse
 from pylti1p3.tool_config import ToolConfJsonFile
-from pylti1p3.message_launch import MessageLaunch
+from .launch import PatchedMessageLaunch as MessageLaunch
 from .adapters import DjangoRequest
 from .storage import DjangoSessionLaunchDataStorage
 from django.views.decorators.csrf import csrf_exempt
