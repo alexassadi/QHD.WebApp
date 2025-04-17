@@ -8,16 +8,14 @@ class DjangoRequest(Request):
         return self._request.is_secure()
 
     def get_param(self, name):
-        # Needed for LTI launch – must support POST and GET
         return self._request.POST.get(name) or self._request.GET.get(name)
 
     def get_cookie(self, name):
         return self._request.COOKIES.get(name)
 
     def get_header(self, name):
-        # Normalizes headers for case and prefix
-        django_headers = self._request.headers
-        return django_headers.get(name) or django_headers.get(f'HTTP_{name.upper().replace("-", "_")}')
+        # normalize headers
+        return self._request.headers.get(name) or self._request.META.get(f'HTTP_{name.upper().replace("-", "_")}', None)
 
     def get_http_method(self):
         return self._request.method
