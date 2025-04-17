@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class LtiappConfig(AppConfig):
+class Lti13Config(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'ltiapp'
+    name = 'lti13'

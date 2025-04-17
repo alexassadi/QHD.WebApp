@@ -29,10 +29,6 @@ DEBUG = os.getenv('DJANGO_DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
-LTI_AUTH_CREDENTIALS = {
-    'test_consumer_key': 'secret'
-}
-
 # Application definition
 
 INSTALLED_APPS = [
