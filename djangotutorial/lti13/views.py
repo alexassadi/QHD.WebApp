@@ -6,8 +6,10 @@ from pylti1p3.message_launch import MessageLaunch
 from .adapters import DjangoRequest
 from .storage import DjangoSessionLaunchDataStorage
 from django.views.decorators.csrf import csrf_exempt
+import os
 
-TOOL_CONFIG_FILE = 'path/to/tool_config.json'
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TOOL_CONFIG_FILE = os.path.join(BASE_DIR, 'lti13', 'tool_config.json')
 
 @csrf_exempt
 def lti13_login(request):
@@ -33,5 +35,9 @@ def lti13_launch(request):
     request.session['roles'] = data.get('https://purl.imsglobal.org/spec/lti/claim/roles', [])
     request.session['name'] = data.get('name')
 
-    return HttpResponseRedirect('/api/dashboard/')
+    return render(request, 'apiapp/practice.html', {
+    'user_id': request.session.get('user_id'),
+    'name': request.session.get('name'),
+    'roles': request.session.get('roles'),
+    })
 
