@@ -32,11 +32,11 @@ def lti13_launch(request):
     launch_data_storage = DjangoSessionLaunchDataStorage(request)
     cookie_service = DjangoCookieService(request)
 
-    message_launch = MessageLaunch(
-        django_request,
-        tool_conf,
-        launch_data_storage,
-        cookie_service=cookie_service
+    message_launch = MessageLaunch.from_request(
+    django_request,
+    tool_conf=tool_conf,
+    launch_data_storage=launch_data_storage,
+    cookie_service=cookie_service
     ).validate_registration().validate()
 
     # Get data from JWT
