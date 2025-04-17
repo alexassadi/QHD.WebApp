@@ -1,0 +1,10 @@
+{
+    "title": "Django LTI Tool",
+    "scopes": [],
+    "extensions": [],
+    "public_jwk_url": "https://qhd-webapp.onrender.com/lti13/.well-known/jwks.json",
+    "initiate_login_url": "https://qhd-webapp.onrender.com/lti13/login/",
+    "redirect_uris": [
+      "https://qhd-webapp.onrender.com/lti13/launch/"
+    ]
+  }
