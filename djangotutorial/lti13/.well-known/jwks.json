@@ -1,0 +1,12 @@
+{
+  "keys": [
+    {
+      "kty": "RSA",
+      "n": "r6Y7dGPLYKCrCEvjwOLMsN65fVgtVmCBFVz0VbN53i5mQSXJLclatBfJSrWkBG6U_o68swADiRaoepOI2ndk3IaZd19P8JPNS91eKwep7QwWEC_ZtwCX5AfG8yqom08FP1k3FluOwu1GrAhE8ckl7pYSG_Rp1d8QJrYZ-e6K8THk9O-acyK5skjG4OZF3ghVHXFRMJGK5FAZiPfZZ_2QmPQa62ji369JxqBdTo0QDNjyTNwXR5ATCDPHAxrdPkSM_XXTXAx2YGuV0Mv_H5hPA9HsyFjIU54nwxU1Jvd6lpoC_cTCZusl6djNi7mHw3NZFsKU2_f_S5F3plmZ4p6wDw",
+      "e": "AQAB",
+      "kid": "django-key",
+      "use": "sig",
+      "alg": "RS256"
+    }
+  ]
+}

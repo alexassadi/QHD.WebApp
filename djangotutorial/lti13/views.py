@@ -41,3 +41,12 @@ def lti13_launch(request):
     'roles': request.session.get('roles'),
     })
 
+from django.http import JsonResponse
+import os
+import json
+
+def jwks_view(request):
+    jwks_path = os.path.join(os.path.dirname(__file__), '.well-known', 'jwks.json')
+    with open(jwks_path, 'r') as f:
+        data = json.load(f)
+    return JsonResponse(data)
