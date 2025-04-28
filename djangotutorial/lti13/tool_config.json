@@ -5,7 +5,7 @@
       "auth_token_url": "https://saltire.lti.app/platform/token/s1037081d814cff55fda9deaf7b0a2e27",
       "key_set_url": "https://saltire.lti.app/tool/jwks/s1037081d814cff55fda9deaf7b0a2e27",
       "tool_redirect_url": "https://qhd-webapp.onrender.com/lti13/launch/",
-      "deployment_ids": ["test-deployment"],
+      "deployment_ids": ["cLWwj9cbmkSrCNsckEFBmA"],
       "private_key_file": "keys/private.key",
       "key_id": "django-key"
     }
