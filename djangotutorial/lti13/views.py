@@ -17,13 +17,16 @@ def lti13_login(request):
     django_request = DjangoRequest(request)
     tool_conf = ToolConfJsonFile(TOOL_CONFIG_FILE)
     launch_data_storage = DjangoSessionLaunchDataStorage(request)
-
     cookie_service = DjangoCookieService(request)
-    return MessageLaunch(
-        django_request, tool_conf, launch_data_storage
-    ).enable_check_cookies()\
-     .set_cookie_service(cookie_service)\
-     .get_redirect()
+
+    message_launch = MessageLaunch(
+        django_request,
+        tool_conf,
+        launch_data_storage,
+        cookie_service=cookie_service  # 👈 ADD THIS
+    )
+
+    return message_launch.enable_check_cookies().get_redirect()
 
 @csrf_exempt
 def lti13_launch(request):
