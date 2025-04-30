@@ -31,6 +31,13 @@ class PatchedMessageLaunch(MessageLaunch):
 
         params = self._build_auth_params(state=state, nonce=nonce)
         return self._redirect(f"{auth_login_url}?{urlencode(params)}")
+    
+    def _get_auth_login_url(self):
+        iss = self._request.get_param('iss')
+        if not iss:
+            raise LtiException('Missing "iss" parameter')
+        return self._tool_conf.get_auth_login_url(iss)
+
 
     def _generate_state(self):
         return secrets.token_urlsafe(32)
