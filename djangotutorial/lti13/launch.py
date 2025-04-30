@@ -16,6 +16,9 @@ class PatchedMessageLaunch(MessageLaunch):
         if not hasattr(self, '_cookie_service'):
             raise AssertionError("Cookie Service must be set")
 
+        # 🔧 Define cookie prefix manually
+        self._cookie_prefix = 'lti1p3_'  # or anything consistent
+
         state = self._generate_state()
         nonce = self._generate_nonce()
 
