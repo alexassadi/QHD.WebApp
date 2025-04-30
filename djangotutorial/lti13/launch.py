@@ -57,7 +57,7 @@ class PatchedMessageLaunch(MessageLaunch):
         return {
             'scope': 'openid',
             'response_type': 'id_token',
-            'client_id': self.get_client_id(),
+            'client_id': self._tool_conf.get_client_id(self._request.get_param("iss")),
             'redirect_uri': self._tool_conf.get_redirect_uri(self._request),
             'login_hint': self._request.get_param('login_hint'),
             'response_mode': 'form_post',
