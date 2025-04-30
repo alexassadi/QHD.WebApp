@@ -15,7 +15,7 @@ class PatchedMessageLaunch(MessageLaunch):
         self._cookie_prefix = 'lti1p3_'  # Default for storing state/nonce
 
     def _get_request_param(self, key):
-        return self._request.POST.get(key) or self._request.GET.get(key)
+        return self._request.get_param(key)
 
     def enable_check_cookies(self):
         self._enable_check_cookies = True
