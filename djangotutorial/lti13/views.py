@@ -23,10 +23,14 @@ def lti13_login(request):
         django_request,
         tool_conf,
         launch_data_storage,
-        cookie_service=cookie_service  # 👈 ADD THIS
+        cookie_service=cookie_service
     )
 
-    return message_launch.enable_check_cookies().get_redirect()
+    response = message_launch.enable_check_cookies().get_redirect()
+    cookie_service._response = response  # Needed to allow setting cookies
+
+    return response  # ✅ No validate() call here!
+
 
 @csrf_exempt
 def lti13_launch(request):
