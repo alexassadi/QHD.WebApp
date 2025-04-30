@@ -1,7 +1,7 @@
 from django.shortcuts import render
 import json
 from django.http import HttpResponseRedirect, HttpResponse
-from pylti1p3.tool_config import ToolConfJsonFile
+from .tool_config import PatchedToolConf as ToolConfJsonFile
 from .launch import PatchedMessageLaunch as MessageLaunch
 from .adapters import DjangoRequest
 from .storage import DjangoSessionLaunchDataStorage
