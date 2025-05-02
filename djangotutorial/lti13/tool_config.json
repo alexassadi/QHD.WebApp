@@ -8,6 +8,14 @@
       "deployment_ids": ["cLWwj9cbmkSrCNsckEFBmA"],
       "private_key_file": "keys/private.key",
       "key_id": "django-key"
+    },
+    "imsglobal": {
+      "client_id": "qhd-client-id",
+      "issuer": "https://lti-ri.imsglobal.org",
+      "auth_login_url": "https://lti-ri.imsglobal.org/platforms/5599/authorizations/new",
+      "auth_token_url": "https://lti-ri.imsglobal.org/platforms/5599/access_tokens",
+      "key_set_url": "https://lti-ri.imsglobal.org/platforms/5599/keys.json",
+      "deployment_ids": ["80042"]
     }
   }
   
