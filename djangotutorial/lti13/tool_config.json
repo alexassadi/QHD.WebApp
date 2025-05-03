@@ -16,6 +16,14 @@
       "key_set_url": "https://lti-ri.imsglobal.org/platforms/5599/keys.json",
       "deployment_ids": ["80042"],
       "tool_redirect_url": "https://qhd-webapp.onrender.com/lti13/launch/"
+    },
+    "https://sandbox.moodledemo.net": {
+      "client_id": "HacjU6PrMHEOEHq",
+      "auth_login_url": "https://sandbox.moodledemo.net/mod/lti/certs.php",
+      "auth_token_url": "https://sandbox.moodledemo.net/mod/lti/token.php",
+      "key_set_url": "https://sandbox.moodledemo.net/mod/lti/certs.php",
+      "deployment_ids": ["1"],
+      "tool_redirect_url": "https://qhd-webapp.onrender.com/lti13/launch/"
     }
   }
   
