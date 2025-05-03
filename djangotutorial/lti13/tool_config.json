@@ -18,7 +18,7 @@
       "tool_redirect_url": "https://qhd-webapp.onrender.com/lti13/launch/"
     },
     "https://sandbox.moodledemo.net": {
-      "client_id": "ZHzXREF0GQMZfd0",
+      "client_id": "8mfySP9B4qs3yOQ",
       "auth_login_url": "https://sandbox.moodledemo.net/mod/lti/certs.php",
       "auth_token_url": "https://sandbox.moodledemo.net/mod/lti/token.php",
       "key_set_url": "https://sandbox.moodledemo.net/mod/lti/certs.php",
