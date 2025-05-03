@@ -18,11 +18,11 @@
       "tool_redirect_url": "https://qhd-webapp.onrender.com/lti13/launch/"
     },
     "https://sandbox.moodledemo.net": {
-      "client_id": "HacjU6PrMHEOEHq",
+      "client_id": "ZHzXREF0GQMZfd0",
       "auth_login_url": "https://sandbox.moodledemo.net/mod/lti/certs.php",
       "auth_token_url": "https://sandbox.moodledemo.net/mod/lti/token.php",
       "key_set_url": "https://sandbox.moodledemo.net/mod/lti/certs.php",
-      "deployment_ids": ["1"],
+      "deployment_ids": ["2"],
       "tool_redirect_url": "https://qhd-webapp.onrender.com/lti13/launch/"
     }
   }
