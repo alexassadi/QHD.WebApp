@@ -22,7 +22,7 @@
       "auth_login_url": "https://sandbox.moodledemo.net/mod/lti/certs.php",
       "auth_token_url": "https://sandbox.moodledemo.net/mod/lti/token.php",
       "key_set_url": "https://sandbox.moodledemo.net/mod/lti/certs.php",
-      "deployment_ids": ["2"],
+      "deployment_ids": ["3"],
       "tool_redirect_url": "https://qhd-webapp.onrender.com/lti13/launch/"
     }
   }
