@@ -15,4 +15,5 @@ class DjangoSessionLaunchDataStorage(LaunchDataStorage):
             del self._session[f"lti_launch_{launch_id}"]
 
     def check_state_is_valid(self, state):
-        return request.session.get("lti1p3_state") == state
+        return self._request.session.get("lti1p3_state") == state
+
