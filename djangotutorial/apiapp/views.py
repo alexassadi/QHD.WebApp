@@ -52,7 +52,7 @@ def generate_sentences(request):
 
             # 1. OpenAI API Request
             print(vocab_list, quantity)
-            while len(sentences) == 0:
+            while len(sentences) < quantity:
                 sentences = oa.initial_prompt(vocab_list, quantity)
             print(sentences)
 
