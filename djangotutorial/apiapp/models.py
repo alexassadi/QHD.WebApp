@@ -48,7 +48,7 @@ class Word(models.Model):
                 self.audio_url = existing.audio_url
             else:
                 # Generate audio and upload
-                audio_binary = el.generate_audio_file(f'''"Listen carefully to the word" <break time="1s" /> "{self.word}" <break time="1s" /> "now listen to the word again" <break time="1s" /> "{self.word}" he said, slowly''')
+                audio_binary = el.generate_audio_file(f'''"Listen carefully to the word" <break time="1s" /> "{self.word}" <break time="1s" /> "now listen to the word again" <break time="1s" /> "{self.word}"''')
                 key = f"audio/word_audio/word_{uuid.uuid4().hex}.mp3"
                 word_audio_url = s3.export_result_to_s3(key, audio_binary, 'audio/mpeg')
                 self.audio_url = word_audio_url
