@@ -240,7 +240,7 @@ def save_and_process_audio(request):
 
                 timestamp = datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
                 results_path = f'results/{timestamp}.json'
-                results_url = s3.export_result_to_s3(results_path, score_data, 'application/json')
+                results_url = s3.export_result_to_s3(results_path, result_json, 'application/json')
 
                 # ✅ Extract and sort lowest scoring words
                 sorted_words = sorted(score_data["words"], key=lambda x: x["word_score"])
