@@ -239,7 +239,7 @@ def save_and_process_audio(request):
 
                 # ✅ Extract and sort lowest scoring words
                 sorted_words = sorted(score_data["words"], key=lambda x: x["word_score"])
-                lowest_words = [word["word_text"] for word in sorted_words if int(word["word_score"]) > 60]
+                lowest_words = [word["word_text"] for word in sorted_words if int(word["word_score"]) < 60]
                 print(lowest_words)
 
                 for word in lowest_words:
