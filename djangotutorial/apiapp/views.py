@@ -251,7 +251,7 @@ def save_and_process_audio(request):
 
                 return JsonResponse({
                     'success': True,
-                    'score': score_data,
+                    'score': result_json,
                     'underlined_sentence': underlined_sentence,
                     'audio_url': converted_url
                 })
