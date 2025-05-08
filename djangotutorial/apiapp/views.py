@@ -20,6 +20,7 @@ from decouple import config
 import tempfile
 import traceback
 from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime
 
 # Add the utilities folder (2 levels up) to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -237,6 +238,10 @@ def save_and_process_audio(request):
                 score_data = json.loads(result_json)
                 score = score_data["overall_score"]
 
+                timestamp = datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
+                results_path = f'results/{timestamp}.json'
+                results_url = s3.export_result_to_s3(results_path, score_data, 'application/json')
+
                 # ✅ Extract and sort lowest scoring words
                 sorted_words = sorted(score_data["words"], key=lambda x: x["word_score"])
                 lowest_words = [word["word_text"] for word in sorted_words if int(word["word_score"]) < 60]
@@ -254,7 +259,7 @@ def save_and_process_audio(request):
 
                 return JsonResponse({
                     'success': True,
-                    'score': result_json,
+                    'score': results_path,
                     'underlined_sentence': underlined_sentence,
                     'audio_url': converted_url
                 })
