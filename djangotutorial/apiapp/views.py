@@ -243,7 +243,7 @@ def save_and_process_audio(request):
                 print(lowest_words)
 
                 for word in lowest_words:
-                    Word.objects.create(text=word)
+                    Word.objects.create(word=word)
 
                 underlined_sentence = sentence.text
                 for word in lowest_words:
