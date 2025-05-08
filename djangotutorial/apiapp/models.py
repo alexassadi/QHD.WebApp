@@ -31,7 +31,7 @@ class Sentence(models.Model):
         super().save(*args, **kwargs)
 
 class Word(models.Model):
-    word = models.CharField(max_length=100, unique=True)
+    word = models.CharField(max_length=100, unique=False)
     created_at = models.DateTimeField(auto_now_add=True)
     audio_url = models.CharField(max_length=255, blank=True, null=True)
 
