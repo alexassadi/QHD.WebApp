@@ -29,3 +29,27 @@ class Sentence(models.Model):
             self.audio_url = fluent_audio_url
 
         super().save(*args, **kwargs)
+
+class Word(models.Model):
+    word = models.CharField(max_length=100, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    audio_url = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return self.word
+
+    def save(self, *args, **kwargs):
+        # Prevent duplicate word entries
+        if not self.pk:
+            existing = Word.objects.filter(word__iexact=self.word).first()
+            if existing:
+                # Copy the existing audio_url from the found instance
+                self.audio_url = existing.audio_url
+            else:
+                # Generate audio and upload
+                audio_binary = el.generate_audio_file(self.word)
+                key = f"audio/word_audio/word_{uuid.uuid4().hex}.mp3"
+                word_audio_url = s3.export_result_to_s3(key, audio_binary, 'audio/mpeg')
+                self.audio_url = word_audio_url
+
+        super().save(*args, **kwargs)

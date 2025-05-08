@@ -6,7 +6,7 @@ import sys
 import os
 from pathlib import Path
 import subprocess
-from .models import Sentence
+from .models import Sentence, Word
 from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 import re
@@ -19,6 +19,7 @@ from django.core.files.base import ContentFile
 from decouple import config
 import tempfile
 import traceback
+from django.views.decorators.csrf import csrf_exempt
 
 # Add the utilities folder (2 levels up) to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -238,8 +239,11 @@ def save_and_process_audio(request):
 
                 # ✅ Extract and sort lowest scoring words
                 sorted_words = sorted(score_data["words"], key=lambda x: x["word_score"])
-                lowest_words = [word["word_text"] for word in sorted_words[:3]]
+                lowest_words = [word["word_text"] for word in sorted_words if int(word["word_score"]) > 60]
                 print(lowest_words)
+
+                for word in lowest_words:
+                    Word.objects.create(text=word)
 
                 underlined_sentence = sentence.text
                 for word in lowest_words:
@@ -296,6 +300,7 @@ def submit_recording(request):
         else:
             return JsonResponse({'success': False, 'error': 'No audio data received'})
         
+@csrf_exempt
 def generate_word_audio(request):
     if request.method == 'POST':
         word = request.POST.get('word')
@@ -304,14 +309,14 @@ def generate_word_audio(request):
             return JsonResponse({'success': False, 'error': 'No word provided.'}, status=400)
 
         try:
-            # ✅ Generate the MP3 file
-            audio_b64 = el.generate_audio_file(word)
+            # 🔍 Check if the word already exists in the database (case-insensitive)
+            existing = Word.objects.filter(word__iexact=word).first()
 
-            s3_key = f'audio/words/word_{uuid.uuid4().hex}.mp3'
+            if existing:
+                return JsonResponse({'success': True, 'audio_url': existing.audio_url})
 
-            # ✅ Return the URL for playback
-            audio_url = s3.export_result_to_s3(s3_key, audio_b64, 'audio/mpeg')
-            return JsonResponse({'success': True, 'audio_url': audio_url})
+            # ❌ If not found, return an error instead of creating it here
+            return JsonResponse({'success': False, 'error': 'Audio not found for this word.'}, status=404)
 
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
