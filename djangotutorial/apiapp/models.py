@@ -39,6 +39,7 @@ class Word(models.Model):
         return self.word
 
     def save(self, *args, **kwargs):
+        self.word = self.word.lower()
         # Prevent duplicate word entries
         if not self.pk:
             existing = Word.objects.filter(word__iexact=self.word).first()
