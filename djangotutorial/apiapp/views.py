@@ -78,10 +78,10 @@ def generate_sentences(request):
     else:
         form = SentenceGenerationForm()
 
-        return render(request, 'apiapp/generate_sentences.html', {
-        'form': form,
-        'sentences': sentences,
-        'error': error,
+    return render(request, 'apiapp/generate_sentences.html', {
+    'form': form,
+    'sentences': sentences,
+    'error': error,
     })
 
 import random  # Import to pick random sentences
