@@ -62,7 +62,7 @@
 
 <!-- "Next Sentence" Button (Appears after audio finishes) -->
 {% if ready_for_next_sentence %}
-    <form method="POST" style="text-align: right;">
+    <form method="POST" style="text-align: right; margin-top: 10px;">
         {% csrf_token %}
         <input type="hidden" name="next_sentence" value="1">
         <button type="submit" id="nextSentenceButton">Next Sentence</button>

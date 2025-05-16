@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.utils.text import slugify
 import os
 import sys
@@ -14,6 +15,7 @@ class Sentence(models.Model):
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     audio_url = models.CharField(max_length=255, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.text  # Display part of the sentence in the admin panel
@@ -34,6 +36,7 @@ class Word(models.Model):
     word = models.CharField(max_length=100, unique=False)
     created_at = models.DateTimeField(auto_now_add=True)
     audio_url = models.CharField(max_length=255, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.word

@@ -21,6 +21,7 @@ import tempfile
 import traceback
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
+from django.contrib.auth.decorators import login_required
 
 # Add the utilities folder (2 levels up) to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -38,6 +39,7 @@ LANGUAGECONFIDENCE_API_KEY = config('LANGUAGE_CONFIDENCE_API_KEY')
 
 MP3_FILEPATH = None
 
+@login_required
 def generate_sentences(request):
     sentences = []  # Stores final API results for display
 
@@ -58,7 +60,7 @@ def generate_sentences(request):
             print(sentences)
 
             for sentence in sentences:
-                Sentence.objects.create(text=sentence)
+                Sentence.objects.create(text=sentence, user=request.user)
 
     else:
         form = SentenceGenerationForm()
@@ -67,6 +69,7 @@ def generate_sentences(request):
 
 import random  # Import to pick random sentences
 
+@login_required
 def practice_view(request):
     form = PracticeForm()
     score = None
@@ -146,6 +149,7 @@ def practice_view(request):
         'score': score
     })
 
+@login_required
 def reset_progress(request):
     # Reset progress to zero
     request.session['progress'] = 0
@@ -166,6 +170,7 @@ def reset_progress(request):
 def completion_page(request):
     return render(request, 'apiapp/completion.html')
 
+@login_required
 def save_and_process_audio(request):
     print("🔔 Entered save_and_process_audio view")
 
@@ -249,7 +254,7 @@ def save_and_process_audio(request):
 
                 for word in lowest_words:
                     word = word.lower()
-                    word_obj, created = Word.objects.get_or_create(word=word)
+                    word_obj, created = Word.objects.get_or_create(word=word, user=request.user)
                     if created:
                         word_obj.save() 
 
@@ -283,6 +288,7 @@ def save_and_process_audio(request):
     print("🚫 Invalid request method.")
     return JsonResponse({'success': False, 'error': 'Invalid request method.'}, status=400)
 
+@login_required
 def submit_recording(request):
     if request.method == 'POST':
         base64_audio = request.POST.get('recording_audio_base64')
