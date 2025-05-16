@@ -354,7 +354,7 @@ def signup_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user)  # Log the user in after signup
-            return redirect('practice')  # or wherever you want
+            return redirect('generate')  # or wherever you want
     else:
         form = UserCreationForm()
     return render(request, 'registration/signup.html', {'form': form})
