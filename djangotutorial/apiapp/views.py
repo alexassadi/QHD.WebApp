@@ -6,7 +6,7 @@ import sys
 import os
 from pathlib import Path
 import subprocess
-from .models import Sentence, Word
+from .models import Sentence, Word, PronunciationResult
 from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 import re
@@ -242,7 +242,43 @@ def save_and_process_audio(request):
                     converted_audio_base64, sentence.text, 'male', 'adult'
                 )
                 score_data = json.loads(result_json)
-                score = score_data["overall_score"]
+
+                # Extract overall score
+                overall_score = score_data.get("overall_score", 0)
+
+                # Extract word-level scores
+                word_scores = {
+                    word["word_text"].lower(): word.get("word_score", 0)
+                    for word in score_data.get("words", [])
+                }
+
+                # Extract and aggregate phoneme-level scores
+                phoneme_scores_raw = {}
+                for word in score_data.get("words", []):
+                    for phoneme in word.get("phonemes", []):
+                        ipa = phoneme["ipa_label"]
+                        score = phoneme["phoneme_score"]
+                        if ipa not in phoneme_scores_raw:
+                            phoneme_scores_raw[ipa] = []
+                        phoneme_scores_raw[ipa].append(score)
+
+                # Average phoneme scores
+                phoneme_scores = {
+                    ipa: sum(scores) // len(scores)
+                    for ipa, scores in phoneme_scores_raw.items()
+                }
+
+                expected_text = score_data.get("expected_text", sentence.text)
+
+                # Store result in the database
+                PronunciationResult.objects.create(
+                    user=request.user,
+                    sentence=sentence,
+                    score=overall_score,
+                    expected_text=expected_text,
+                    word_scores=word_scores,
+                    phoneme_scores=phoneme_scores
+                )
 
                 timestamp = datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
                 results_path = f'results/{timestamp}.json'

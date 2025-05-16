@@ -57,3 +57,12 @@ class Word(models.Model):
                 self.audio_url = word_audio_url
 
         super().save(*args, **kwargs)
+
+class PronunciationResult(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    sentence = models.ForeignKey('Sentence', on_delete=models.CASCADE)
+    score = models.IntegerField()
+    expected_text = models.TextField()  # ✅ New field
+    word_scores = models.JSONField()
+    phoneme_scores = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
