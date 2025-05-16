@@ -28,6 +28,9 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = []
 
+LOGIN_URL = '/accounts/login/'
+
+LOGIN_REDIRECT_URL = '/generate/'
 
 # Application definition
 

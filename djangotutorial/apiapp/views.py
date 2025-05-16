@@ -342,3 +342,19 @@ import subprocess
 def debug_static(request):
     output = subprocess.check_output("find staticfiles/ -name '*.css'", shell=True).decode()
     return HttpResponse(f"<pre>{output}</pre>")
+
+
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+from django.shortcuts import render, redirect
+
+def signup_view(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  # Log the user in after signup
+            return redirect('practice')  # or wherever you want
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/signup.html', {'form': form})

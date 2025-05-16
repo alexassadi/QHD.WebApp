@@ -9,4 +9,5 @@ urlpatterns = [
     path('save-and-process-audio/', views.save_and_process_audio, name='save_and_process_audio'),
     path('generate-word-audio/', views.generate_word_audio, name='generate_word_audio'),
     path('debug/', views.debug_static, name='debug'),
+    path('accounts/signup/', views.signup_view, name='signup'),
 ]
