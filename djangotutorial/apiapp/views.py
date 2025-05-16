@@ -69,9 +69,10 @@ def generate_sentences(request):
                 quantity = vocab_count
                 print("📦 Sending to OpenAI:", vocab_list, quantity)
 
-                # Call OpenAI via openai_func.py
-                sentences = oa.initial_prompt(vocab_list, quantity)
-                print(f"Sentences: {sentences}")
+                while len(sentences) < quantity:
+                    # Call OpenAI via openai_func.py
+                    sentences = oa.initial_prompt(vocab_list, quantity)
+                    print(f"Sentences: {sentences}")
 
                 for sentence in sentences:
                     Sentence.objects.create(text=sentence, user=request.user)
