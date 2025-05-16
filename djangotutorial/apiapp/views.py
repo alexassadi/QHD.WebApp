@@ -22,6 +22,7 @@ import traceback
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 
 # Add the utilities folder (2 levels up) to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -39,7 +40,7 @@ LANGUAGECONFIDENCE_API_KEY = config('LANGUAGE_CONFIDENCE_API_KEY')
 
 MP3_FILEPATH = None
 
-@login_required
+@staff_member_required
 def generate_sentences(request):
     sentences = []  # Stores final API results for display
 
@@ -354,7 +355,7 @@ def signup_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user)  # Log the user in after signup
-            return redirect('generate')  # or wherever you want
+            return redirect('homepage')  # or wherever you want
     else:
         form = UserCreationForm()
     return render(request, 'registration/signup.html', {'form': form})

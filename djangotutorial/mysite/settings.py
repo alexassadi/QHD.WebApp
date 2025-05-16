@@ -30,7 +30,7 @@ ALLOWED_HOSTS = []
 
 LOGIN_URL = '/accounts/login/'
 
-LOGIN_REDIRECT_URL = '/generate/'
+LOGIN_REDIRECT_URL = '/'
 
 # Application definition
 
