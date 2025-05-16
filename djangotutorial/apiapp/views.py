@@ -43,6 +43,7 @@ MP3_FILEPATH = None
 @staff_member_required
 def generate_sentences(request):
     sentences = []  # Stores final API results for display
+    error = None
 
     if request.method == 'POST':
         form = SentenceGenerationForm(request.POST)
@@ -52,16 +53,26 @@ def generate_sentences(request):
             print("✅ Form data is valid")
             # Extract data from form
             quantity = form.cleaned_data['sentence_number']
-            vocab_list = form.cleaned_data['vocab_list']
+            vocab_raw = form.cleaned_data['vocab_list']
 
-            # 1. OpenAI API Request
-            print(vocab_list, quantity)
-            while len(sentences) < quantity:
+            # Clean and split vocabulary list
+            vocab_list = [v.strip() for v in vocab_raw.split(',') if v.strip()]
+            vocab_count = len(vocab_list)
+
+
+            # Enforce one sentence per vocab word
+            if quantity < vocab_count:
+                error = f"You entered {vocab_count} terms but requested only {quantity} sentences. Please request at least {vocab_count}."
+            else:
+                # Limit quantity to vocab list length
+                quantity = vocab_count
+                print("📦 Sending to OpenAI:", vocab_list, quantity)
+
+                # Call OpenAI via openai_func.py
                 sentences = oa.initial_prompt(vocab_list, quantity)
-            print(sentences)
 
-            for sentence in sentences:
-                Sentence.objects.create(text=sentence, user=request.user)
+                for sentence in sentences:
+                    Sentence.objects.create(text=sentence, user=request.user)
 
     else:
         form = SentenceGenerationForm()
