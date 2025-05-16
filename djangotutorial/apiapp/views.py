@@ -71,6 +71,7 @@ def generate_sentences(request):
 
                 # Call OpenAI via openai_func.py
                 sentences = oa.initial_prompt(vocab_list, quantity)
+                print(f"Sentences: {sentences}")
 
                 for sentence in sentences:
                     Sentence.objects.create(text=sentence, user=request.user)
