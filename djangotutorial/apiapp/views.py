@@ -59,6 +59,7 @@ def generate_sentences(request):
             vocab_list = [v.strip() for v in vocab_raw.split(',') if v.strip()]
             vocab_count = len(vocab_list)
 
+            quantity = int(quantity)
 
             # Enforce one sentence per vocab word
             if quantity < vocab_count:
