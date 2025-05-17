@@ -29,7 +29,7 @@ def initial_prompt(vocab_list, quantity):
     print(f"Raw response:\n {reply}")
 
     raw_split = re.split(r'\d+\.\s', reply)
-    sentences = [x.strip().replace('\n', '') for x in raw_split if x.strip()]
+    sentences = [x.strip() for x in raw_split if x.strip()]
 
     if len(sentences) < int(quantity):
         print("⚠️ Warning: fewer sentences returned than requested.")
