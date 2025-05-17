@@ -23,6 +23,7 @@ from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+import time
 
 # Add the utilities folder (2 levels up) to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -70,8 +71,10 @@ def generate_sentences(request):
 
                 while len(sentences) < quantity:
                     # Call OpenAI via openai_func.py
+                    start = time.time()
                     sentences = oa.initial_prompt(vocab_list, quantity)
                     print(f"Sentences: {sentences}")
+                    print(f"⏱ Sentence generation took: {time.time() - start:.2f} seconds")
 
                 for sentence in sentences:
                     Sentence.objects.create(text=sentence, user=request.user)
