@@ -66,7 +66,6 @@ def generate_sentences(request):
                 error = f"You entered {vocab_count} terms but requested only {quantity} sentences. Please request at least {vocab_count}."
             else:
                 # Limit quantity to vocab list length
-                quantity = vocab_count
                 print("📦 Sending to OpenAI:", vocab_list, quantity)
 
                 while len(sentences) < quantity:

@@ -26,9 +26,13 @@ def initial_prompt(vocab_list, quantity):
 
     # Print response
     reply = response.choices[0].message.content
+    print(f"Raw response:\n {reply}")
 
-    # Use regex to split at the numbers followed by a period and a space
-    sentences = [x[:-1].replace('\n','') for x in re.split(r'\d+\.\s', reply)[1:]]  # [1:] removes the first empty element
+    raw_split = re.split(r'\d+\.\s', reply)
+    sentences = [x.strip().replace('\n', '') for x in raw_split if x.strip()]
+
+    if len(sentences) < int(quantity):
+        print("⚠️ Warning: fewer sentences returned than requested.")
 
     # Print the resulting list
     return sentences
