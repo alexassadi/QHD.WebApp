@@ -9,6 +9,12 @@
     <h1>⚙️ Generate Sentences</h1>
     <p>Generate practice sentences for your learning journey!</p>
 
+    {% if error %}
+        <div style="color: red; margin-bottom: 1em;">
+            ⚠️ {{ error }}
+        </div>
+    {% endif %}
+
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}
