@@ -53,30 +53,23 @@ def generate_sentences(request):
         if form.is_valid():
             print("✅ Form data is valid")
             # Extract data from form
-            quantity = form.cleaned_data['sentence_number']
+            #quantity = form.cleaned_data['sentence_number']
             vocab_raw = form.cleaned_data['vocab_list']
 
             # Clean and split vocabulary list
             vocab_list = [v.strip() for v in vocab_raw.split(',') if v.strip()]
-            vocab_count = len(vocab_list)
 
-            quantity = int(quantity)
+            # Limit quantity to vocab list length
+            print("📦 Sending to OpenAI:", vocab_list)
 
-            # Enforce one sentence per vocab word
-            if quantity < vocab_count:
-                error = f"You entered {vocab_count} terms but requested only {quantity} sentences. Please request at least {vocab_count}."
-            else:
-                # Limit quantity to vocab list length
-                print("📦 Sending to OpenAI:", vocab_list, quantity)
+            # Call OpenAI via openai_func.py
+            start = time.time()
+            sentences = oa.initial_prompt(vocab_list)
+            print(f"Sentences: {sentences}")
+            print(f"⏱ Sentence generation took: {time.time() - start:.2f} seconds")
 
-                # Call OpenAI via openai_func.py
-                start = time.time()
-                sentences = oa.initial_prompt(vocab_list, quantity)
-                print(f"Sentences: {sentences}")
-                print(f"⏱ Sentence generation took: {time.time() - start:.2f} seconds")
-
-                for sentence in sentences:
-                    Sentence.objects.create(text=sentence, user=request.user)
+            for sentence in sentences:
+                Sentence.objects.create(text=sentence, user=request.user)
 
     else:
         form = SentenceGenerationForm()

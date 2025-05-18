@@ -8,14 +8,14 @@ API_KEY = config('OPENAI_API_KEY')
 
 # Read file and save as string
 
-def initial_prompt(vocab_list, quantity):
+def initial_prompt(vocab_list):
     # Set your API key
     client = openai.OpenAI(api_key=API_KEY)
 
     # Initialize conversation history
     conversation_history = [
         {"role": "system", "content": PROMPT_2},
-        {"role": "user", "content": prompt.generate_prompt(vocab_list,quantity)},
+        {"role": "user", "content": prompt.generate_prompt(vocab_list)},
     ]
 
     # Send first prompt
@@ -30,9 +30,6 @@ def initial_prompt(vocab_list, quantity):
 
     raw_split = re.split(r'\d+\.\s', reply)
     sentences = [x.strip() for x in raw_split[0].split('\n') if x != '']
-
-    if len(sentences) < int(quantity):
-        print("⚠️ Warning: fewer sentences returned than requested.")
 
     # Print the resulting list
     return sentences
