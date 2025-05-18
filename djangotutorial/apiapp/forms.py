@@ -2,7 +2,7 @@ from django import forms
 from .models import Sentence
 
 class SentenceGenerationForm(forms.Form):
-    sentence_number = forms.CharField(label='Number of senteces', widget=forms.Textarea, required=True)
+    #sentence_number = forms.CharField(label='Number of senteces', widget=forms.Textarea, required=True)
     vocab_list = forms.CharField(label='Vocabulary list', widget=forms.Textarea, required=True)
     
 

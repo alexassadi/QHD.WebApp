@@ -2,7 +2,7 @@ import prompt
 import openai
 import re
 from decouple import config
-from master_prompt import MASTER_PROMPT
+from master_prompt import MASTER_PROMPT, PROMPT_2
 
 API_KEY = config('OPENAI_API_KEY')
 
@@ -14,7 +14,7 @@ def initial_prompt(vocab_list, quantity):
 
     # Initialize conversation history
     conversation_history = [
-        {"role": "system", "content": MASTER_PROMPT},
+        {"role": "system", "content": PROMPT_2},
         {"role": "user", "content": prompt.generate_prompt(vocab_list,quantity)},
     ]
 
