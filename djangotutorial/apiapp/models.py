@@ -13,6 +13,7 @@ import s3_func as s3
 
 class Sentence(models.Model):
     text = models.TextField()
+    phonemes = models.TextField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     audio_url = models.CharField(max_length=255, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)

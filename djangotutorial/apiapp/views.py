@@ -69,7 +69,7 @@ def generate_sentences(request):
             print(f"⏱ Sentence generation took: {time.time() - start:.2f} seconds")
 
             for sentence in sentences:
-                Sentence.objects.create(text=sentence, user=request.user)
+                Sentence.objects.create(text=sentence[0], phonemes=sentence[1], user=request.user)
 
     else:
         form = SentenceGenerationForm()

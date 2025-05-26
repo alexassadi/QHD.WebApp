@@ -1,4 +1,10 @@
 master_prompt = f'''This is a master prompt. Prompts related to this master prompt will refer to the master prompt for overall context. The context to the prompt is that I wish to generate a number of sentence. Each sentence will have an accompanying audio file in mp3 format so that the correct pronunciation can be heard. These sentences will be spoken by call centre staff and, as part of another process, the audios captured will be assessed for pronunciation and reading fluency. Each sentence will be based around one of the words in vocabulary list which will be uploaded to the sub-prompt. The following will be entered on a prompt-by-prompt basis. The words below in parentheses will be define what instructions will vary in the sub-prompts: The [CEFR level] of the English of the sentence The [subject of the sentences] Other points to note: 1. For the vocabulary list, words will be a different CEFR levels. The instruction to produce the passage according to the CEFR level, does not apply to the individual words in the list of vocabulary. 2. The word from the vocabulary list should be highlighted by using capital letters. 3. The sentences should be relevant to call centre staff and something that an agent may say. 4. Provide the [quantity] of sentences provided by the sub-prompt'''
 
 def generate_prompt(vocab_list):
-    return f"Vocabulary list: {vocab_list}"
+    return f"""Vocabulary list: {vocab_list}
+There are only {len(vocab_list)} terms in the list, but you MUST generate a total of 30 sentences.
+Use the terms in the list for the first {len(vocab_list)} sentences.
+For the remaining {30 - len(vocab_list)} sentences, generate new terms that are semantically similar to the terms provided and follow the same sentence requirements.
+Always produce exactly 30 sentences. And remember, I want the sentences formatted as one long continuous text as I will split it myself programmatically so the format you provide the sentences in is crucial. Follow the format seen below:
+sentence - phonemes of sentence ## sentence - phonemes of key word
+"""

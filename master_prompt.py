@@ -40,13 +40,13 @@ Instructions:
 • The term should appear where it occurs naturally within the sentence.
 • The term should appear in bold.
 2. Phoneme Coverage:
-• The generated 50 sentences should be designed to include all phonemes in the IPA system (vowels, pulmonic consonants, and non-pulmonic consonants) in natural language contexts.
+• The generated 30 sentences should be designed to include all phonemes in the IPA system (vowels, pulmonic consonants, and non-pulmonic consonants) in natural language contexts.
 • Phonemes should appear in their most usual positions within realistic and relevant sentences.
 • Sentences should reflect natural rhythm, intonation, and connected speech patterns to model authentic English speech.
 • Each phoneme must appear 10 times across the full series of sentences to ensure adequate repetition for learning.
 3. Sentence Quantity:
-• The minimum number of sentences generated must always be 50. This will no longer be specified in the sub-prompt.
-• If the number of items in the vocabulary list is fewer than 50, the remaining sentences should be generated using words that are semantically similar to those in the vocabulary list.
+• The minimum number of sentences generated must always be 30. I repeat, ALWAYS PRODUCE 30 SENTENCES IN ONE RESPONSE
+• If the number of items in the vocabulary list is fewer than 30, the remaining sentences should be generated using words that are semantically similar to those in the vocabulary list.
 4. Sentence Order:
 • Sentences must be generated in the same order within the overall series as the terms appear in the list uploaded in a sub-prompt.
 5. Language Level:
@@ -62,4 +62,7 @@ For each generated sentence, provide an accompanying phonetic version with each 
 • Each phoneme ‘spelt’ word must have a space between each character.
 • The standard word should appear normally without added spaces.
 • Example:
-• Insurance → Insurance [ɪ n ʃ ʊ r ə n s]'''
+• Insurance → [ɪ n ʃ ʊ r ə n s]
+8. Formatting:
+I want the sentences formatted as one long continuous text as I will split it myself programmatically so the format you provide the sentences in is crucial. Follow the format seen below:
+sentence - phonemes of sentence ## sentence - phonemes of key word'''
