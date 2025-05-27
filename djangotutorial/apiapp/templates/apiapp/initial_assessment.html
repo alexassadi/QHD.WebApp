@@ -37,10 +37,7 @@
                 <button id="recordButton" class="microphone-button">
                     <img id="microphoneIcon" src="https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/microphone.png" 
                          alt="Microphone Icon" width="80">
-                </button>
-
-            <audio id="playback" controls style="display: none;"></audio>
-            
+                </button>            
             </div>
         {% endif %}
 
@@ -104,10 +101,6 @@
         const recordButton = document.getElementById('recordButton');
         const microphoneIcon = document.getElementById('microphoneIcon');
         const listenToRecordingButton = document.getElementById('listenToRecordingButton');
-        const playback = document.getElementById('playback');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        const scoreDisplay = document.getElementById('scoreDisplay');
-        const scoreValue = document.getElementById('scoreValue');
         const sentenceId = document.getElementById('sentenceId').value;
 
         const originalSentenceElement = document.querySelector('.key-term-sentence');
@@ -179,9 +172,6 @@
                         })
 
                         const data = await response.json();
-
-                        // Hide spinner and show score
-                        loadingSpinner.style.display = 'none';
 
                         if (data.success) {
                             console.log("✅ Score received, moving to next sentence...");

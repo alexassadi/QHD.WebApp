@@ -449,9 +449,6 @@ def initial_assessment(request):
         match = re.search(r'\b[A-Z]{2,}\b', selected_sentence.text)
         key_term = match.group(0) if match else "Other"
 
-        # Bold the key term inside the sentence
-        highlighted_sentence = selected_sentence.text.replace('**', "<strong>")
-
         if request.session.get('cached_audio_path') is None:
             fluent_audio_path = selected_sentence.audio_url  # Already saved in the model
             request.session['cached_audio_path'] = fluent_audio_path
@@ -471,7 +468,7 @@ def initial_assessment(request):
 
 
     return render(request, 'apiapp/practice.html', {
-        'sentence': highlighted_sentence,
+        'sentence': selected_sentence,
         'key_term': key_term,
         'fluent_audio_path': fluent_audio_path,
         'progress': progress + 1,
