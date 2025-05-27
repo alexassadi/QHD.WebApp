@@ -467,6 +467,13 @@ def initial_assessment(request):
             request.session['ready_for_next_sentence'] = True
             request.session.modified = True  # Force Django to save session changes
 
+        if request.method == 'POST' and 'next_sentence' in request.POST:
+            request.session['progress'] += 1
+            request.session['show_recording_frame'] = False
+            request.session['ready_for_next_sentence'] = False
+            request.session['cached_audio_path'] = None
+            return redirect('initial_assessment')
+
     except Sentence.DoesNotExist:
         selected_sentence = None
         key_term = "Unknown"
