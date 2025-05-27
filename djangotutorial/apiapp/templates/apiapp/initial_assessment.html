@@ -24,18 +24,23 @@
 {% if fluent_audio_path %}
     <div class="listen-button-container">
         {% if not show_recording_frame %}
-            <form method="POST">
+            <form method="POST" id="listenForm">
                 {% csrf_token %}
                 <input type="hidden" name="listen_action" value="1">
-                <button type="submit" id="listenButton">Listen</button>
+                <img id="playButton" 
+                    src="https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/play.png" 
+                    data-active-src="https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/play-clicked.png" 
+                    data-inactive-src="https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/play.png" 
+                    alt="Play Button" 
+                    width="60" 
+                    style="cursor: pointer;">
             </form>
         {% endif %}
 
         {% if show_recording_frame %}
-            <button id="listenAgainButton">Listen Again</button>
             <div class="microphone-container">
                 <button id="recordButton" class="microphone-button">
-                    <img id="microphoneIcon" src="https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/microphone.png" 
+                    <img id="microphoneIcon" src="https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/record.png" 
                          alt="Microphone Icon" width="80">
                 </button>            
             </div>
@@ -63,16 +68,30 @@
         const listenAgainButton = document.getElementById('listenAgainButton');
         const audioElement = document.getElementById('fluentAudio');
 
-        listenButton?.addEventListener('click', (event) => {
-            event.preventDefault();
-            audioElement.play();
+        const playButton = document.getElementById('playButton');
+        const listenForm = document.getElementById('listenForm');
 
-            // Submit form after audio finishes
-            audioElement.onended = () => {
-                const form = listenButton.closest('form');
-                form.submit();  // ✅ Submit form to update session state
+        if (playButton && listenForm) {
+            const inactiveSrc = playButton.dataset.inactiveSrc;
+            const activeSrc = playButton.dataset.activeSrc;
+
+            playButton.addEventListener('click', (event) => {
+                event.preventDefault();
+                playButton.src = activeSrc;
+                audioElement.play();
+
+                audioElement.onended = () => {
+                    playButton.src = inactiveSrc;
+                    listenForm.submit();  // Submit form after playback
+                };
+            });
+
+            // Optional: reset button if playback is interrupted
+            audioElement.onpause = () => {
+                playButton.src = inactiveSrc;
             };
-        });
+        }
+
 
         listenAgainButton?.addEventListener('click', () => {
             audioElement.play();
@@ -106,7 +125,7 @@
         recordButton?.addEventListener('click', async () => {
             if (!isRecording) {
                 console.log("🎙️ Recording started...");
-                microphoneIcon.src = "https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/microphone_red.png";
+                microphoneIcon.src = "https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/record-clicked.png";
                 isRecording = true;
     
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -121,7 +140,7 @@
                 recorder.startRecording();
             } else {
                 console.log("⏹️ Recording stopped.");
-                microphoneIcon.src = "https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/microphone.png";
+                microphoneIcon.src = "https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/record.png";
                 isRecording = false;
     
                 recorder.stopRecording(() => {
