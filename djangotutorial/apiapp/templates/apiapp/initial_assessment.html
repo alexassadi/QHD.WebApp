@@ -140,25 +140,8 @@
                     const reader = new FileReader();
                     reader.readAsDataURL(recordedAudioBlob);
     
-                    reader.onloadend = async () => {
-                        const base64Audio = reader.result.split(',')[1];
-
-                        // Show spinner when submitting the recording
-                        loadingSpinner.style.display = 'block';
-                        microphoneIcon.style.display = 'none';
-                        listenAgainButton.style.display = 'none';
-    
-                        if (!base64Audio) {
-                            console.error("❌ Audio data is empty or invalid.");
-                            return;
-                        }
-    
-                        console.log("🎯 Audio successfully converted to Base64:", base64Audio.slice(0, 50));
-    
-                        // ✅ Use FormData instead of JSON
-                        const formData = new FormData();
-                        formData.append('audio_file', base64Audio);
-    
+                    try {
+                        // Submit audio for scoring
                         const response = await fetch("{% url 'save_and_process_audio' %}", {
                             method: 'POST',
                             body: new URLSearchParams({
@@ -169,23 +152,21 @@
                                 'X-CSRFToken': getCSRFToken(),
                                 'Content-Type': 'application/x-www-form-urlencoded'
                             }
-                        })
+                        });
 
                         const data = await response.json();
 
                         if (data.success) {
-                            console.log("✅ Score received, moving to next sentence...");
-                            
-                            // Automatically trigger form submission to go to the next sentence
+                            // ✅ Instantly go to the next sentence
                             const nextForm = document.createElement('form');
                             nextForm.method = 'POST';
                             nextForm.style.display = 'none';
+                            nextForm.action = window.location.href;
 
-                            const csrfToken = getCSRFToken();
                             const csrfInput = document.createElement('input');
                             csrfInput.type = 'hidden';
                             csrfInput.name = 'csrfmiddlewaretoken';
-                            csrfInput.value = csrfToken;
+                            csrfInput.value = getCSRFToken();
 
                             const nextInput = document.createElement('input');
                             nextInput.type = 'hidden';
@@ -195,12 +176,13 @@
                             nextForm.appendChild(csrfInput);
                             nextForm.appendChild(nextInput);
                             document.body.appendChild(nextForm);
-
                             nextForm.submit();
                         } else {
-                            alert("Error calculating score. Please try again.");
+                            alert("Scoring failed. Please try again.");
                         }
-
+                    } catch (error) {
+                        console.error("❌ Fetch error:", error);
+                        alert("An error occurred. Please try again.");
                     }
                 });
             }
