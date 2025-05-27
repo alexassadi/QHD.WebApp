@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-    Pronunciation Practice
+    Initial Assessment
 {% endblock %}
 
 {% block content %}
@@ -10,6 +10,15 @@
 
     <!-- Progress Bar -->
     <p class="progress-text">{{ progress }}/{{ total_sentences }}</p>
+
+    <!-- Instructional Text -->
+    <p id="instructionText" class="instruction-text">
+        {% if show_recording_frame %}
+            Press record and speak the sentence. To listen again press play.
+        {% else %}
+            Press play to listen to the sentence
+        {% endif %}
+    </p>
 
     <!-- Key Term and Sentence -->
     <p class="key-term-sentence">
@@ -118,6 +127,7 @@
                 console.log("🎙️ Recording started...");
                 microphoneIcon.src = "https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/record-clicked.png";
                 isRecording = true;
+                document.getElementById('instructionText').textContent = "Press the button again to stop recording";
     
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     
