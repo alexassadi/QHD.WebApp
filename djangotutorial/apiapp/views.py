@@ -429,7 +429,7 @@ def initial_assessment(request):
     if 'exercise_sentences' not in request.session:
         all_sentences = list(Sentence.objects.all())
         random.shuffle(all_sentences)
-        request.session['exercise_sentences'] = [s.id for s in all_sentences[:5]]
+        request.session['exercise_sentences'] = [s.id for s in all_sentences[:30]]
         request.session['progress'] = 0  # Start at 0
         request.session['show_recording_frame'] = False
         request.session['ready_for_next_sentence'] = False

@@ -38,7 +38,7 @@ Instructions:
 • Each sentence must include one term from the list provided directly in the sub-prompt.
 • Throughout the entire series of sentences, each term must be used once in its own sentence.
 • The term should appear where it occurs naturally within the sentence.
-• The term should appear in bold.
+• The term should appear in CAPITALS.
 2. Phoneme Coverage:
 • The generated 30 sentences should be designed to include all phonemes in the IPA system (vowels, pulmonic consonants, and non-pulmonic consonants) in natural language contexts.
 • Phonemes should appear in their most usual positions within realistic and relevant sentences.
@@ -56,7 +56,7 @@ Instructions:
 • Sentences should be relevant to call centre staff and align with realistic workplace scenarios.
 • Each sentence must contain a different context and language from any other sentence.
 • Sentences should reflect authentic things a call centre agent would say to a customer, using realistic language and instructions that align with typical customer interactions.
-• Each term should appear naturally in the sentence and in bold.
+• Each term should appear naturally in the sentence and in CAPITALS.
 7. Phoneme Metadata:
 For each generated sentence, provide an accompanying phonetic version with each word shown as its constituent phonemes according to the IPA standard.
 • Each phoneme ‘spelt’ word must have a space between each character.
