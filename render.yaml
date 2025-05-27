@@ -3,8 +3,17 @@ services:
     name: qhd-webapp
     env: python
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
-    startCommand: gunicorn apiapp.wsgi:application --timeout 180
+    startCommand: gunicorn djangotutorial.wsgi:application --timeout 180
     staticPublishPath: staticfiles
     envVars:
       - key: DJANGO_SETTINGS_MODULE
-        value: apiapp.settings
+        value: djangotutorial.settings
+
+  - type: worker
+    name: qhd-worker
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python manage.py qcluster
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: djangotutorial.settings

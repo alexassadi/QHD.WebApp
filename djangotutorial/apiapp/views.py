@@ -41,43 +41,41 @@ LANGUAGECONFIDENCE_API_KEY = config('LANGUAGE_CONFIDENCE_API_KEY')
 
 MP3_FILEPATH = None
 
+# views.py (updated generate_sentences view)
+from django_q.models import Task
+from django_q.tasks import async_task
+from apiapp.tasks import generate_sentences_task
+from django.http import JsonResponse
+import uuid
+
 @staff_member_required
 def generate_sentences(request):
-    sentences = []  # Stores final API results for display
+    sentences = []
     error = None
+    task_id = None
 
     if request.method == 'POST':
         form = SentenceGenerationForm(request.POST)
-        print("🚀 Form submission detected!")
-
         if form.is_valid():
-            print("✅ Form data is valid")
-            # Extract data from form
-            #quantity = form.cleaned_data['sentence_number']
             vocab_raw = form.cleaned_data['vocab_list']
-
-            # Clean and split vocabulary list
             vocab_list = [v.strip() for v in vocab_raw.split(',') if v.strip()]
 
-            # Limit quantity to vocab list length
-            print("📦 Sending to OpenAI:", vocab_list)
+            # Launch background task
+            task_id = async_task(
+                "apiapp.tasks.generate_sentences_task",
+                vocab_list,
+                request.user.id,
+                hook="apiapp.tasks.notify_completion"
+            )
 
-            # Call OpenAI via openai_func.py
-            start = time.time()
-            sentences = oa.initial_prompt(vocab_list)
-            print(f"Sentences: {sentences}")
-            print(f"⏱ Sentence generation took: {time.time() - start:.2f} seconds")
-
-            for sentence in sentences:
-                Sentence.objects.create(text=sentence[0], phonemes=sentence[1], user=request.user)
-
+            return JsonResponse({"task_id": task_id, "status": "processing"})
     else:
         form = SentenceGenerationForm()
 
     return render(request, 'apiapp/generate_sentences.html', {
-    'form': form,
-    'sentences': sentences,
-    'error': error,
+        'form': form,
+        'sentences': sentences,
+        'error': error,
     })
 
 import random  # Import to pick random sentences

@@ -39,10 +39,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_q',
     'posts',
     'apiapp',
     'storages'
 ]
+
+Q_CLUSTER = {
+    'name': 'DjangoQ',
+    'workers': 1,
+    'timeout': 300,
+    'retry': 300,
+    'queue_limit': 50,
+    'bulk': 10,
+    'orm': 'default',
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
