@@ -27,17 +27,14 @@
                 data-active-src="https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/play-clicked.png" 
                 data-inactive-src="https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/play.png" 
                 alt="Play Button" 
-                width="60" 
-                style="cursor: pointer;">
+                class="action-icon">
         </form>
 
         {% if show_recording_frame %}
-            <div class="microphone-container">
-                <button id="recordButton" class="microphone-button">
-                    <img id="microphoneIcon" src="https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/record.png" 
-                         alt="Microphone Icon" width="80">
-                </button>            
-            </div>
+            <button id="recordButton" class="action-button">
+                <img id="microphoneIcon" src="https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/record.png" 
+                    alt="Microphone Icon" class="action-icon">
+            </button>
         {% endif %}
 
         <audio id="fluentAudio">
