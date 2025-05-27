@@ -8,6 +8,17 @@ User = get_user_model()
 def generate_sentences_task(vocab_list, user_id):
     user = User.objects.get(id=user_id)
     sentences = oa.initial_prompt(vocab_list)
+
     for sentence in sentences:
-        Sentence.objects.create(text=sentence[0], phonemes=sentence[1], user=user)
+        print("SAVING:", sentence)  # Debug print
+
+        if isinstance(sentence, list) and len(sentence) == 2:
+            Sentence.objects.create(
+                text=sentence[0],
+                phonemes=sentence[1],
+                user=user
+            )
+        else:
+            print("⚠️ Malformed sentence:", sentence)
+
     return "done"
