@@ -9,11 +9,7 @@
 <div class="card">
 
     <!-- Progress Bar -->
-    <h2 class="progress-heading">Key words</h2>
     <p class="progress-text">{{ progress }}/{{ total_sentences }}</p>
-
-    <!-- New Word or Phrase Section -->
-    <h3 class="new-word">New word or phrase</h3>
 
     <!-- Key Term and Sentence -->
     <p class="key-term-sentence">
@@ -23,19 +19,17 @@
 <!-- Audio Playback Section -->
 {% if fluent_audio_path %}
     <div class="listen-button-container">
-        {% if not show_recording_frame %}
-            <form method="POST" id="listenForm">
-                {% csrf_token %}
-                <input type="hidden" name="listen_action" value="1">
-                <img id="playButton" 
-                    src="https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/play.png" 
-                    data-active-src="https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/play-clicked.png" 
-                    data-inactive-src="https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/play.png" 
-                    alt="Play Button" 
-                    width="60" 
-                    style="cursor: pointer;">
-            </form>
-        {% endif %}
+        <form method="POST" id="listenForm">
+            {% csrf_token %}
+            <input type="hidden" name="listen_action" value="1">
+            <img id="playButton" 
+                src="https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/play.png" 
+                data-active-src="https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/play-clicked.png" 
+                data-inactive-src="https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/play.png" 
+                alt="Play Button" 
+                width="60" 
+                style="cursor: pointer;">
+        </form>
 
         {% if show_recording_frame %}
             <div class="microphone-container">
