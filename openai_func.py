@@ -45,4 +45,4 @@ def initial_prompt(vocab_list):
             print("Could not parse item:", item)  # Optional error logging
 
     # Print the resulting list
-    return sentences
+    return nested_sentences
