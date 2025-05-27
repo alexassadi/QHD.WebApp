@@ -461,6 +461,12 @@ def initial_assessment(request):
         if 'ready_for_next_sentence' not in request.session:
             request.session['ready_for_next_sentence'] = False
 
+        # Show recording and listen again after listening finishes
+        if 'listen_action' in request.POST:
+            request.session['show_recording_frame'] = True
+            request.session['ready_for_next_sentence'] = True
+            request.session.modified = True  # Force Django to save session changes
+
     except Sentence.DoesNotExist:
         selected_sentence = None
         key_term = "Unknown"
