@@ -53,11 +53,6 @@
     <input type="hidden" name="audio_file" id="recordingAudioInput">
 </form>
 
-<form method="POST" action="{% url 'reset_progress' %}">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger" id = "restartExerciseButton" style="margin-top: 10px">Restart Exercise</button>
-</form>
-
 <input type="hidden" id="sentenceId" value="{{ sentence.id }}">
 
 </div>
@@ -131,58 +126,61 @@
     
                 recorder.stopRecording(() => {
                     const recordedAudioBlob = recorder.getBlob();
-
-                    // Enable playback
-                    const audioUrl = URL.createObjectURL(recordedAudioBlob);
-                    playback.src = audioUrl;
-                    playback.style.display = 'none'; // Hidden but used internally for playback
-    
                     const reader = new FileReader();
                     reader.readAsDataURL(recordedAudioBlob);
-    
-                    try {
-                        // Submit audio for scoring
-                        const response = await fetch("{% url 'save_and_process_audio' %}", {
-                            method: 'POST',
-                            body: new URLSearchParams({
-                                'audio_file': base64Audio,
-                                'sentence_id': sentenceId
-                            }),
-                            headers: {
-                                'X-CSRFToken': getCSRFToken(),
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            }
-                        });
 
-                        const data = await response.json();
+                    reader.onloadend = async () => {
+                        const base64Audio = reader.result.split(',')[1];
 
-                        if (data.success) {
-                            // ✅ Instantly go to the next sentence
-                            const nextForm = document.createElement('form');
-                            nextForm.method = 'POST';
-                            nextForm.style.display = 'none';
-                            nextForm.action = window.location.href;
-
-                            const csrfInput = document.createElement('input');
-                            csrfInput.type = 'hidden';
-                            csrfInput.name = 'csrfmiddlewaretoken';
-                            csrfInput.value = getCSRFToken();
-
-                            const nextInput = document.createElement('input');
-                            nextInput.type = 'hidden';
-                            nextInput.name = 'next_sentence';
-                            nextInput.value = '1';
-
-                            nextForm.appendChild(csrfInput);
-                            nextForm.appendChild(nextInput);
-                            document.body.appendChild(nextForm);
-                            nextForm.submit();
-                        } else {
-                            alert("Scoring failed. Please try again.");
+                        if (!base64Audio) {
+                            console.error("❌ Audio data is empty or invalid.");
+                            return;
                         }
-                    } catch (error) {
-                        console.error("❌ Fetch error:", error);
-                        alert("An error occurred. Please try again.");
+    
+                        try {
+                            // Submit audio for scoring
+                            const response = await fetch("{% url 'save_and_process_audio' %}", {
+                                method: 'POST',
+                                body: new URLSearchParams({
+                                    'audio_file': base64Audio,
+                                    'sentence_id': sentenceId
+                                }),
+                                headers: {
+                                    'X-CSRFToken': getCSRFToken(),
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                }
+                            });
+
+                            const data = await response.json();
+
+                            if (data.success) {
+                                // ✅ Instantly go to the next sentence
+                                const nextForm = document.createElement('form');
+                                nextForm.method = 'POST';
+                                nextForm.style.display = 'none';
+                                nextForm.action = window.location.href;
+
+                                const csrfInput = document.createElement('input');
+                                csrfInput.type = 'hidden';
+                                csrfInput.name = 'csrfmiddlewaretoken';
+                                csrfInput.value = getCSRFToken();
+
+                                const nextInput = document.createElement('input');
+                                nextInput.type = 'hidden';
+                                nextInput.name = 'next_sentence';
+                                nextInput.value = '1';
+
+                                nextForm.appendChild(csrfInput);
+                                nextForm.appendChild(nextInput);
+                                document.body.appendChild(nextForm);
+                                nextForm.submit();
+                            } else {
+                                alert("Scoring failed. Please try again.");
+                            }
+                        } catch (error) {
+                            console.error("❌ Fetch error:", error);
+                            alert("An error occurred. Please try again.");
+                        }
                     }
                 });
             }
