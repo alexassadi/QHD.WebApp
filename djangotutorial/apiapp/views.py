@@ -467,7 +467,7 @@ def initial_assessment(request):
         highlighted_sentence = ""
 
 
-    return render(request, 'apiapp/practice.html', {
+    return render(request, 'apiapp/initial_assessment.html', {
         'sentence': selected_sentence,
         'key_term': key_term,
         'fluent_audio_path': fluent_audio_path,
