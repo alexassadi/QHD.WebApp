@@ -9,6 +9,9 @@
 <div class="card">
 
     <!-- Progress Bar -->
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
     <p class="progress-text">{{ progress }}/{{ total_sentences }}</p>
 
     <!-- Instructional Text -->
@@ -96,6 +99,17 @@
         listenAgainButton?.addEventListener('click', () => {
             audioElement.play();
         });
+
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.querySelector('.progress-text');
+
+        if (progressBar && progressText) {
+            const [current, total] = progressText.textContent.split('/').map(num => parseInt(num));
+            if (!isNaN(current) && !isNaN(total)) {
+                const percentage = Math.round((current / total) * 100);
+                progressBar.style.width = `${percentage}%`;
+            }
+        }
     });
 </script>
 
