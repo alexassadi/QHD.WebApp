@@ -40,7 +40,8 @@ def initial_prompt(vocab_list):
         if match:
             sentence = match.group(1).strip()
             phonemes = match.group(2).strip()  # Re-adding the brackets
-            nested_sentences.append([sentence, phonemes])
+            if len(sentence) > 30:
+                nested_sentences.append([sentence, phonemes])
         else:
             print("Could not parse item:", item)  # Optional error logging
 
