@@ -418,61 +418,67 @@ from django.conf import settings
 
 @login_required
 def initial_assessment(request):
-    sentences = Sentence.objects.all()[:30]
-    total_sentences = len(sentences)
-    current_index = int(request.session.get('assessment_index', 0))
-
-    if current_index >= total_sentences:
-        request.session['assessment_index'] = 0
-        return redirect('assessment_complete')
-
-    sentence = sentences[current_index]
-    sentence_id = sentence.id
-    fluent_audio_path = sentence.fluent_audio.url if sentence.fluent_audio else None
-    show_recording_frame = False
+    form = PracticeForm()
     score = None
+    selected_sentence = None
+    fluent_audio_path = None
+    show_speaker_gender = False
+    uid = None
 
-    if request.method == 'POST':
-        form = PronunciationForm(request.POST, request.FILES)
-        if form.is_valid():
-            audio_file = form.cleaned_data['audio_file']
+    # Track progress (total = 5 sentences)
+    if 'exercise_sentences' not in request.session:
+        all_sentences = list(Sentence.objects.all())
+        random.shuffle(all_sentences)
+        request.session['exercise_sentences'] = [s.id for s in all_sentences[:5]]
+        request.session['progress'] = 0  # Start at 0
+        request.session['show_recording_frame'] = False
+        request.session['ready_for_next_sentence'] = False
+        request.session['cached_audio_path'] = None
 
-            filename = f"assessment_{uuid.uuid4()}.wav"
-            path = os.path.join(settings.MEDIA_ROOT, filename)
-            with open(path, 'wb+') as destination:
-                for chunk in audio_file.chunks():
-                    destination.write(chunk)
+    # Retrieve the current sentence from progress
+    sentence_ids = request.session['exercise_sentences']
+    progress = request.session['progress']
 
-            try:
-                with open(path, 'rb') as f:
-                    audio_data = f.read()
-                result = lc.score_pronunciation(audio_data, sentence.text)
-            except Exception:
-                result = {'score': 0, 'words': []}
+    # Check if progress is complete
+    if progress >= len(sentence_ids):
+        return redirect('completion_page')  # Redirect to success/completion page
 
-            PronunciationResult.objects.create(
-                user=request.user,
-                sentence=sentence,
-                audio_file=audio_file,
-                score=result.get('score', 0),
-                word_scores=result.get('words', [])
-            )
+    # Retrieve the next sentence
+    try:
+        selected_sentence = Sentence.objects.get(id=sentence_ids[progress])
+        match = re.search(r'\b[A-Z]{2,}\b', selected_sentence.text)
+        key_term = match.group(0) if match else "Other"
 
-            os.remove(path)
-            request.session['assessment_index'] = current_index + 1
-            return redirect('initial_assessment')
-    else:
-        form = PronunciationForm()
+        # Bold the key term inside the sentence
+        highlighted_sentence = selected_sentence.text.replace('**', "<strong>")
 
-    return render(request, 'apiapp/initial_assessment.html', {
-        'form': form,
-        'sentence': sentence.text,
-        'sentence_id': sentence_id,
+        if request.session.get('cached_audio_path') is None:
+            fluent_audio_path = selected_sentence.audio_url  # Already saved in the model
+            request.session['cached_audio_path'] = fluent_audio_path
+        else:
+            fluent_audio_path = request.session['cached_audio_path']  # ✅ Use cached audio file
+
+        # Track if the user has listened once
+        if 'show_recording_frame' not in request.session:
+            request.session['show_recording_frame'] = False
+        if 'ready_for_next_sentence' not in request.session:
+            request.session['ready_for_next_sentence'] = False
+
+    except Sentence.DoesNotExist:
+        selected_sentence = None
+        key_term = "Unknown"
+        highlighted_sentence = ""
+
+
+    return render(request, 'apiapp/practice.html', {
+        'sentence': highlighted_sentence,
+        'key_term': key_term,
         'fluent_audio_path': fluent_audio_path,
-        'progress': current_index + 1,
-        'total_sentences': total_sentences,
-        'show_recording_frame': show_recording_frame,
-        'score': score,
+        'progress': progress + 1,
+        'total_sentences': len(sentence_ids),
+        'show_recording_frame': request.session.get('show_recording_frame', False),
+        'ready_for_next_sentence': request.session.get('ready_for_next_sentence', False),
+        'score': score
     })
 
 @login_required

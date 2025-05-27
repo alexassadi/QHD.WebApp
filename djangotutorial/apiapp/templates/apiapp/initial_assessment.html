@@ -2,66 +2,220 @@
 {% load static %}
 
 {% block title %}
-    Initial Assessment
+    Pronunciation Practice
 {% endblock %}
 
 {% block content %}
 <div class="card">
 
     <!-- Progress Bar -->
-    <h2 class="progress-heading">Assessment Progress</h2>
+    <h2 class="progress-heading">Key words</h2>
     <p class="progress-text">{{ progress }}/{{ total_sentences }}</p>
 
-    <!-- Sentence to Assess -->
-    <h3 class="new-word">Please read the following:</h3>
-    <p class="key-term-sentence">{{ sentence|safe }}</p>
+    <!-- New Word or Phrase Section -->
+    <h3 class="new-word">New word or phrase</h3>
 
-    <!-- Audio Recording Section -->
-    <div class="record-section">
-        <p>Click the microphone to start recording</p>
-        <img src="{% static 'images/microphone.png' %}" id="recordButton" alt="Record" class="record-button">
-        <form method="POST" enctype="multipart/form-data" id="assessmentForm">
-            {% csrf_token %}
-            {{ form.audio_file }}
-            <input type="hidden" name="sentence_id" value="{{ sentence_id }}">
-        </form>
+    <!-- Key Term and Sentence -->
+    <p class="key-term-sentence">
+        {{ sentence|safe }}
+    </p>
+
+<!-- Audio Playback Section -->
+{% if fluent_audio_path %}
+    <div class="listen-button-container">
+        {% if not show_recording_frame %}
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="listen_action" value="1">
+                <button type="submit" id="listenButton">Listen</button>
+            </form>
+        {% endif %}
+
+        {% if show_recording_frame %}
+            <button id="listenAgainButton">Listen Again</button>
+            <div class="microphone-container">
+                <button id="recordButton" class="microphone-button">
+                    <img id="microphoneIcon" src="https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/microphone.png" 
+                         alt="Microphone Icon" width="80">
+                </button>
+
+            <audio id="playback" controls style="display: none;"></audio>
+            
+            </div>
+        {% endif %}
+
+        <audio id="fluentAudio">
+            <source src="{{ fluent_audio_path }}" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
     </div>
+{% endif %}
+
+<form method="POST" enctype="multipart/form-data" id="recordingForm">
+    {% csrf_token %}
+    <input type="hidden" name="audio_file" id="recordingAudioInput">
+</form>
+
+<form method="POST" action="{% url 'reset_progress' %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger" id = "restartExerciseButton" style="margin-top: 10px">Restart Exercise</button>
+</form>
+
+<input type="hidden" id="sentenceId" value="{{ sentence.id }}">
 
 </div>
 
 <script>
-let mediaRecorder;
-let audioChunks = [];
-const recordButton = document.getElementById('recordButton');
-const form = document.getElementById('assessmentForm');
+    document.addEventListener('DOMContentLoaded', () => {
+        const listenButton = document.getElementById('listenButton');
+        const listenAgainButton = document.getElementById('listenAgainButton');
+        const audioElement = document.getElementById('fluentAudio');
 
-recordButton.addEventListener('click', async () => {
-    if (!mediaRecorder || mediaRecorder.state === 'inactive') {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorder = new MediaRecorder(stream);
+        listenButton?.addEventListener('click', (event) => {
+            event.preventDefault();
+            audioElement.play();
 
-        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+            // Submit form after audio finishes
+            audioElement.onended = () => {
+                const form = listenButton.closest('form');
+                form.submit();  // ✅ Submit form to update session state
+            };
+        });
 
-        mediaRecorder.onstop = async () => {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-            const fileInput = form.querySelector('input[type="file"]');
-            const file = new File([audioBlob], 'recording.wav');
-            const container = new DataTransfer();
-            container.items.add(file);
-            fileInput.files = container.files;
-            form.submit();
+        listenAgainButton?.addEventListener('click', () => {
+            audioElement.play();
+        });
+    });
+</script>
+
+<script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        let recorder;
+        let audioChunks = [];
+        let recordedAudioBlob = null;
+    
+        const getCSRFToken = () => {
+            const token = document.querySelector('meta[name="csrf-token"]');
+            return token ? token.getAttribute('content') : '';
         };
+    
+        const recordButton = document.getElementById('recordButton');
+        const microphoneIcon = document.getElementById('microphoneIcon');
+        const listenToRecordingButton = document.getElementById('listenToRecordingButton');
+        const playback = document.getElementById('playback');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const scoreValue = document.getElementById('scoreValue');
+        const sentenceId = document.getElementById('sentenceId').value;
 
-        audioChunks = [];
-        mediaRecorder.start();
-        recordButton.src = "{% static 'images/microphone_red.png' %}";
+        const originalSentenceElement = document.querySelector('.key-term-sentence');
+        const originalTextSize = window.getComputedStyle(originalSentenceElement).fontSize;
+    
+        let isRecording = false;
+    
+        recordButton?.addEventListener('click', async () => {
+            if (!isRecording) {
+                console.log("🎙️ Recording started...");
+                microphoneIcon.src = "https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/microphone_red.png";
+                isRecording = true;
+    
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    
+                recorder = new RecordRTC(stream, {
+                    type: 'audio',
+                    mimeType: 'audio/wav',
+                    recorderType: RecordRTC.StereoAudioRecorder,
+                    desiredSampRate: 16000
+                });
+    
+                recorder.startRecording();
+            } else {
+                console.log("⏹️ Recording stopped.");
+                microphoneIcon.src = "https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/microphone.png";
+                isRecording = false;
+    
+                recorder.stopRecording(() => {
+                    const recordedAudioBlob = recorder.getBlob();
 
-        setTimeout(() => {
-            mediaRecorder.stop();
-            recordButton.src = "{% static 'images/microphone.png' %}";
-        }, 4000); // Auto stop after 4 seconds
-    }
-});
+                    // Enable playback
+                    const audioUrl = URL.createObjectURL(recordedAudioBlob);
+                    playback.src = audioUrl;
+                    playback.style.display = 'none'; // Hidden but used internally for playback
+    
+                    const reader = new FileReader();
+                    reader.readAsDataURL(recordedAudioBlob);
+    
+                    reader.onloadend = async () => {
+                        const base64Audio = reader.result.split(',')[1];
+
+                        // Show spinner when submitting the recording
+                        loadingSpinner.style.display = 'block';
+                        microphoneIcon.style.display = 'none';
+                        listenAgainButton.style.display = 'none';
+    
+                        if (!base64Audio) {
+                            console.error("❌ Audio data is empty or invalid.");
+                            return;
+                        }
+    
+                        console.log("🎯 Audio successfully converted to Base64:", base64Audio.slice(0, 50));
+    
+                        // ✅ Use FormData instead of JSON
+                        const formData = new FormData();
+                        formData.append('audio_file', base64Audio);
+    
+                        const response = await fetch("{% url 'save_and_process_audio' %}", {
+                            method: 'POST',
+                            body: new URLSearchParams({
+                                'audio_file': base64Audio,
+                                'sentence_id': sentenceId
+                            }),
+                            headers: {
+                                'X-CSRFToken': getCSRFToken(),
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            }
+                        })
+
+                        const data = await response.json();
+
+                        // Hide spinner and show score
+                        loadingSpinner.style.display = 'none';
+
+                        if (data.success) {
+                            console.log("✅ Score received, moving to next sentence...");
+                            
+                            // Automatically trigger form submission to go to the next sentence
+                            const nextForm = document.createElement('form');
+                            nextForm.method = 'POST';
+                            nextForm.style.display = 'none';
+
+                            const csrfToken = getCSRFToken();
+                            const csrfInput = document.createElement('input');
+                            csrfInput.type = 'hidden';
+                            csrfInput.name = 'csrfmiddlewaretoken';
+                            csrfInput.value = csrfToken;
+
+                            const nextInput = document.createElement('input');
+                            nextInput.type = 'hidden';
+                            nextInput.name = 'next_sentence';
+                            nextInput.value = '1';
+
+                            nextForm.appendChild(csrfInput);
+                            nextForm.appendChild(nextInput);
+                            document.body.appendChild(nextForm);
+
+                            nextForm.submit();
+                        } else {
+                            alert("Error calculating score. Please try again.");
+                        }
+
+                    }
+                });
+            }
+        });
+    });
 </script>
 
 {% endblock %}
