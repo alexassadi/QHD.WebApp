@@ -114,7 +114,7 @@ def practice_view(request):
         key_term = match.group(0) if match else "Other"
 
         # Bold the key term inside the sentence
-        highlighted_sentence = selected_sentence.text.replace(key_term, f"<strong>{key_term}</strong>")
+        highlighted_sentence = selected_sentence.text.replace('**', "<strong>")
 
         if request.session.get('cached_audio_path') is None:
             fluent_audio_path = selected_sentence.audio_url  # Already saved in the model
@@ -405,3 +405,76 @@ def signup_view(request):
     else:
         form = UserCreationForm()
     return render(request, 'registration/signup.html', {'form': form})
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Sentence, PronunciationResult
+from .forms import PronunciationForm
+import uuid
+import os
+import base64
+from django.core.files.base import ContentFile
+from django.conf import settings
+
+@login_required
+def initial_assessment(request):
+    sentences = Sentence.objects.all()[:30]
+    total_sentences = len(sentences)
+    current_index = int(request.session.get('assessment_index', 0))
+
+    if current_index >= total_sentences:
+        request.session['assessment_index'] = 0
+        return redirect('assessment_complete')
+
+    sentence = sentences[current_index]
+    sentence_id = sentence.id
+    fluent_audio_path = sentence.fluent_audio.url if sentence.fluent_audio else None
+    show_recording_frame = False
+    score = None
+
+    if request.method == 'POST':
+        form = PronunciationForm(request.POST, request.FILES)
+        if form.is_valid():
+            audio_file = form.cleaned_data['audio_file']
+
+            filename = f"assessment_{uuid.uuid4()}.wav"
+            path = os.path.join(settings.MEDIA_ROOT, filename)
+            with open(path, 'wb+') as destination:
+                for chunk in audio_file.chunks():
+                    destination.write(chunk)
+
+            try:
+                with open(path, 'rb') as f:
+                    audio_data = f.read()
+                result = lc.score_pronunciation(audio_data, sentence.text)
+            except Exception:
+                result = {'score': 0, 'words': []}
+
+            PronunciationResult.objects.create(
+                user=request.user,
+                sentence=sentence,
+                audio_file=audio_file,
+                score=result.get('score', 0),
+                word_scores=result.get('words', [])
+            )
+
+            os.remove(path)
+            request.session['assessment_index'] = current_index + 1
+            return redirect('initial_assessment')
+    else:
+        form = PronunciationForm()
+
+    return render(request, 'apiapp/initial_assessment.html', {
+        'form': form,
+        'sentence': sentence.text,
+        'sentence_id': sentence_id,
+        'fluent_audio_path': fluent_audio_path,
+        'progress': current_index + 1,
+        'total_sentences': total_sentences,
+        'show_recording_frame': show_recording_frame,
+        'score': score,
+    })
+
+@login_required
+def assessment_complete(request):
+    return render(request, 'apiapp/assessment_complete.html')

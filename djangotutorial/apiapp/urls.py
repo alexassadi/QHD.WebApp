@@ -10,4 +10,6 @@ urlpatterns = [
     path('generate-word-audio/', views.generate_word_audio, name='generate_word_audio'),
     path('debug/', views.debug_static, name='debug'),
     path('accounts/signup/', views.signup_view, name='signup'),
+    path("initial_assessment/", views.initial_assessment, name="initial_assessment"),
+    path("assessment_complete/", views.assessment_complete, name="assessment_complete"),
 ]

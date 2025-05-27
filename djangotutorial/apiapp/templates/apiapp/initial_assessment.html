@@ -1,0 +1,67 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}
+    Initial Assessment
+{% endblock %}
+
+{% block content %}
+<div class="card">
+
+    <!-- Progress Bar -->
+    <h2 class="progress-heading">Assessment Progress</h2>
+    <p class="progress-text">{{ progress }}/{{ total_sentences }}</p>
+
+    <!-- Sentence to Assess -->
+    <h3 class="new-word">Please read the following:</h3>
+    <p class="key-term-sentence">{{ sentence|safe }}</p>
+
+    <!-- Audio Recording Section -->
+    <div class="record-section">
+        <p>Click the microphone to start recording</p>
+        <img src="{% static 'images/microphone.png' %}" id="recordButton" alt="Record" class="record-button">
+        <form method="POST" enctype="multipart/form-data" id="assessmentForm">
+            {% csrf_token %}
+            {{ form.audio_file }}
+            <input type="hidden" name="sentence_id" value="{{ sentence_id }}">
+        </form>
+    </div>
+
+</div>
+
+<script>
+let mediaRecorder;
+let audioChunks = [];
+const recordButton = document.getElementById('recordButton');
+const form = document.getElementById('assessmentForm');
+
+recordButton.addEventListener('click', async () => {
+    if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+
+        mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            const fileInput = form.querySelector('input[type="file"]');
+            const file = new File([audioBlob], 'recording.wav');
+            const container = new DataTransfer();
+            container.items.add(file);
+            fileInput.files = container.files;
+            form.submit();
+        };
+
+        audioChunks = [];
+        mediaRecorder.start();
+        recordButton.src = "{% static 'images/microphone_red.png' %}";
+
+        setTimeout(() => {
+            mediaRecorder.stop();
+            recordButton.src = "{% static 'images/microphone.png' %}";
+        }, 4000); // Auto stop after 4 seconds
+    }
+});
+</script>
+
+{% endblock %}
