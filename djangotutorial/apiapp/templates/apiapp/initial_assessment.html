@@ -28,6 +28,12 @@
         {{ sentence|safe }}
     </p>
 
+    <img id="loadingSpinner" 
+     src="https://qhd-speech-training.s3.eu-west-2.amazonaws.com/images/loading.gif" 
+     alt="Loading..." 
+     class="action-icon" 
+     style="display: none; margin-top: 10px;" />
+
 <!-- Audio Playback Section -->
 {% if fluent_audio_path %}
     <div class="listen-button-container">
@@ -159,6 +165,13 @@
                 isRecording = false;
     
                 recorder.stopRecording(() => {
+                    if (microphoneIcon) microphoneIcon.style.display = 'none';
+                    const playButton = document.getElementById('playButton');
+                    if (playButton) playButton.style.display = 'none';
+
+                    const spinner = document.getElementById('loadingSpinner');
+                    if (spinner) spinner.style.display = 'inline-block';
+
                     const recordedAudioBlob = recorder.getBlob();
                     const reader = new FileReader();
                     reader.readAsDataURL(recordedAudioBlob);
