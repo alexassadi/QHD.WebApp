@@ -79,9 +79,9 @@ def generate_sentences(request):
         'form': form,
         'sentences': sentences,
         'error': error,
-        'left_indices': [f"{str(x)} " if len(str(x)) < 2 else str(x) for x in list(range(1, 51, 3))],   # [1, 3, 5, ..., 49]
-        'middle_indices': [f"{str(x)} " if len(str(x)) < 2 else str(x) for x in list(range(2, 51, 3))],  # [2, 4, 6, ..., 50]
-        'right_indices': [f"{str(x)} " if len(str(x)) < 2 else str(x) for x in list(range(3, 51, 3))],  # [2, 4, 6, ..., 50]
+        'left_indices': list(range(1, 51, 3)),   # [1, 3, 5, ..., 49]
+        'middle_indices': list(range(2, 51, 3)),  # [2, 4, 6, ..., 50]
+        'right_indices': list(range(3, 51, 3)),  # [2, 4, 6, ..., 50]
     })
 
 import random  # Import to pick random sentences
