@@ -18,30 +18,23 @@
 
     <form method="POST">
         {% csrf_token %}
-        <p>Enter a maximum of 50 words or terms below (for detailed guidance on the initial selection <a href="#">click here</a>).</p>
-        <p>The words or terms you enter will be used to generate sentences which will be used by your users to improve their pronunciation.</p>
-
-        <div style="display: flex; gap: 20px;">
+        <p>Enter a maximum of 50 words or terms below...</p>
+        <div style="display: flex; gap: 40px;">
             <div style="flex: 1;">
-                {% with left_column="1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45,47,49" %}
-                    {% for i in left_column|cut:" " |split:"," %}
-                        <div>
-                            <label>{{ i }} {{ form|get_item:"word_"|add:i }}</label>
-                        </div>
-                    {% endfor %}
-                {% endwith %}
+                {% for i in left_indices %}
+                    <div>
+                        <label>{{ i }} {{ form|get_item:"word_"|add:i }}</label>
+                    </div>
+                {% endfor %}
             </div>
             <div style="flex: 1;">
-                {% with right_column="2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50" %}
-                    {% for i in right_column|cut:" " |split:"," %}
-                        <div>
-                            <label>{{ i }} {{ form|get_item:"word_"|add:i }}</label>
-                        </div>
-                    {% endfor %}
-                {% endwith %}
+                {% for i in right_indices %}
+                    <div>
+                        <label>{{ i }} {{ form|get_item:"word_"|add:i }}</label>
+                    </div>
+                {% endfor %}
             </div>
         </div>
-
         <button type="submit">ADD</button>
     </form>
 </div>

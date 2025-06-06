@@ -79,6 +79,8 @@ def generate_sentences(request):
         'form': form,
         'sentences': sentences,
         'error': error,
+        'left_indices': list(range(1, 51, 2)),   # [1, 3, 5, ..., 49]
+        'right_indices': list(range(2, 51, 2)),  # [2, 4, 6, ..., 50]
     })
 
 import random  # Import to pick random sentences
