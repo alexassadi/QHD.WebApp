@@ -17,8 +17,23 @@
 
     <form method="POST">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Generate Sentences</button>
+        <p>Enter a maximum of 50 words or terms below (for detailed guidance on the initial selection <a href="#">click here</a>).</p>
+        <p>The words or terms you enter will be used to generate sentences which will be used by your users to improve their pronunciation.</p>
+
+        <div style="display: flex; flex-wrap: wrap;">
+            <div style="flex: 1;">
+                {% for i in 1|to:50|step:2 %}
+                    <label>{{ i }} {{ form.word_{{ i }} }}</label><br/>
+                {% endfor %}
+            </div>
+            <div style="flex: 1;">
+                {% for i in 2|to:51|step:2 %}
+                    <label>{{ i }} {{ form.word_{{ i }} }}</label><br/>
+                {% endfor %}
+            </div>
+        </div>
+
+        <button type="submit">ADD</button>
     </form>
 </div>
 

@@ -50,6 +50,7 @@ import uuid
 
 @staff_member_required
 def generate_sentences(request):
+    from django.contrib import messages
     sentences = []
     error = None
     task_id = None
@@ -57,10 +58,8 @@ def generate_sentences(request):
     if request.method == 'POST':
         form = SentenceGenerationForm(request.POST)
         if form.is_valid():
-            vocab_raw = form.cleaned_data['vocab_list']
-            vocab_list = [v.strip() for v in vocab_raw.split(',') if v.strip()]
+            vocab_list = form.get_terms()
 
-            # Launch background task
             task_id = async_task(
                 "apiapp.tasks.generate_sentences_task",
                 vocab_list,
@@ -68,7 +67,11 @@ def generate_sentences(request):
                 hook="apiapp.tasks.notify_completion"
             )
 
-            return JsonResponse({"task_id": task_id, "status": "processing"})
+            messages.success(request, f"✅ {len(vocab_list)} terms submitted successfully!")
+            return redirect('generate_sentences')  # PRG pattern
+        else:
+            error = "Please correct the errors below."
+
     else:
         form = SentenceGenerationForm()
 
