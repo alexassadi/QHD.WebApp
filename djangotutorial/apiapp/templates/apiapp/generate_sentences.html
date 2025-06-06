@@ -19,22 +19,32 @@
     <form method="POST">
         {% csrf_token %}
         <p>Enter a maximum of 50 words or terms below...</p>
-        <div style="display: flex; gap: 8px; justify-content: center;">
-            <div style="flex: 1;">
-                {% for i in left_indices %}
-                    <div>
-                        <label>{{ i }} {% form_field form "word_" i %}</label>
-                    </div>
-                {% endfor %}
-            </div>
-            <div style="flex: 1;">
-                {% for i in right_indices %}
-                    <div>
-                        <label>{{ i }} {% form_field form "word_" i %}</label>
-                    </div>
-                {% endfor %}
-            </div>
+        <div style="display: flex; gap: 16px; justify-content: center;">
+    <div style="flex: 1;">
+            {% for i in left_indices %}
+                <div>
+                    <label for="id_word_{{ i }}">{{ i }}</label>
+                    {% form_field form "word_" i %}
+                </div>
+            {% endfor %}
         </div>
+        <div style="flex: 1;">
+            {% for i in middle_indices %}
+                <div>
+                    <label for="id_word_{{ i }}">{{ i }}</label>
+                    {% form_field form "word_" i %}
+                </div>
+            {% endfor %}
+        </div>
+        <div style="flex: 1;">
+            {% for i in right_indices %}
+                <div>
+                    <label for="id_word_{{ i }}">{{ i }}</label>
+                    {% form_field form "word_" i %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
         <button type="submit">ADD</button>
     </form>
 </div>
