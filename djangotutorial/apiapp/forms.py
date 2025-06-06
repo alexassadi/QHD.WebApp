@@ -9,7 +9,7 @@ class SentenceGenerationForm(forms.Form):
                 required=False,
                 label=f"{i}",
                 widget=forms.TextInput(attrs={
-                    'style': 'border-radius: 0; width: 400px; height: 30px; border: 3px solid #ccc;',
+                    'style': 'border-radius: 0; width: 400px; height: 30px; border: 2px solid #000;',
                 })
             )
 
