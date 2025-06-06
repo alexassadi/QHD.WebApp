@@ -23,14 +23,14 @@
             <div style="flex: 1;">
                 {% for i in left_indices %}
                     <div>
-                        <label>{{ i }} {{ form|get_item:"word_"|add:i }}</label>
+                        <label>{{ i }} {% form_field form "word_" i %}</label>
                     </div>
                 {% endfor %}
             </div>
             <div style="flex: 1;">
                 {% for i in right_indices %}
                     <div>
-                        <label>{{ i }} {{ form|get_item:"word_"|add:i }}</label>
+                        <label>{{ i }} {% form_field form "word_" i %}</label>
                     </div>
                 {% endfor %}
             </div>
