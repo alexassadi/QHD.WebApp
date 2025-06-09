@@ -64,6 +64,7 @@ def generate_sentences(request):
                 "apiapp.tasks.generate_sentences_task",
                 vocab_list,
                 request.user.id,
+                request.user.profile.client,
                 hook="apiapp.tasks.notify_completion"
             )
 
@@ -289,6 +290,7 @@ def save_and_process_audio(request):
                 # Store result in the database
                 PronunciationResult.objects.create(
                     user=request.user,
+                    client = request.user.profile.client,
                     sentence=sentence,
                     score=overall_score,
                     expected_text=expected_text,
@@ -307,7 +309,7 @@ def save_and_process_audio(request):
 
                 for word in lowest_words:
                     word = word.lower()
-                    word_obj, created = Word.objects.get_or_create(word=word, user=request.user)
+                    word_obj, created = Word.objects.get_or_create(word=word, user=request.user, client = request.user.profile.client)
                     if created:
                         word_obj.save() 
 

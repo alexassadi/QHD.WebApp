@@ -11,6 +11,20 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 import elevenlabs_func as el
 import s3_func as s3
 
+class Client(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.client.name}"
+
 class Sentence(models.Model):
     text = models.TextField()
     phonemes = models.TextField(null=True)
