@@ -23,24 +23,24 @@
         <div style="display: flex; gap: 16px; justify-content: center;">
     <div style="flex: 1;">
             {% for i in left_indices %}
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="width: 28px; ; line-height: 50px; font-size: 24px; text-align: right;">{{ i }}</span>
+                <div class="form-row">
+                    <span>{{ i }}</span>
                     {% form_field form "word_" i %}
                 </div>
             {% endfor %}
         </div>
         <div style="flex: 1;">
             {% for i in middle_indices %}
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="width: 28px; ; line-height: 50px; font-size: 24px; text-align: right;">{{ i }}</span>
+                <div class="form-row">
+                    <span>{{ i }}</span>
                     {% form_field form "word_" i %}
                 </div>
             {% endfor %}
         </div>
         <div style="flex: 1;">
             {% for i in right_indices %}
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="width: 28px; ; line-height: 50px; font-size: 24px; text-align: right;">{{ i }}</span>
+                <div class="form-row">
+                    <span>{{ i }}</span>
                     {% form_field form "word_" i %}
                 </div>
             {% endfor %}
