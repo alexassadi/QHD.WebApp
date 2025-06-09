@@ -8,9 +8,7 @@ class SentenceGenerationForm(forms.Form):
             self.fields[f'word_{i}'] = forms.CharField(
                 required=False,
                 label=f"{i}",
-                widget=forms.TextInput(attrs={
-                    'style': 'border-radius: 0; width: 400px; height: 32px; border: 2px solid #000;',
-                })
+                widget=forms.TextInput(attrs={'class': 'term-input'})
             )
 
     def clean(self):
