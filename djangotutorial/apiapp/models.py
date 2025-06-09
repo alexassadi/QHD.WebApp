@@ -31,7 +31,7 @@ class Sentence(models.Model):
     phonemes = models.TextField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     audio_url = models.CharField(max_length=255, blank=True, null=True)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.text  # Display part of the sentence in the admin panel
@@ -53,7 +53,7 @@ class Word(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     audio_url = models.CharField(max_length=255, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.word
