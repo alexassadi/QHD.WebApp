@@ -21,6 +21,7 @@ class Client(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    is_admin = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user.username} - {self.client.name}"
@@ -30,7 +31,7 @@ class Sentence(models.Model):
     phonemes = models.TextField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     audio_url = models.CharField(max_length=255, blank=True, null=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.text  # Display part of the sentence in the admin panel
@@ -52,6 +53,7 @@ class Word(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     audio_url = models.CharField(max_length=255, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.word

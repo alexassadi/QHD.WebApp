@@ -12,4 +12,4 @@ class ClientAdmin(admin.ModelAdmin):
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'client')
-    list_filter = ('client',)
+    list_filter = ('client', 'is_admin')

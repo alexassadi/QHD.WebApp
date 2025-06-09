@@ -435,7 +435,8 @@ def initial_assessment(request):
 
     # Track progress (total = 5 sentences)
     if 'exercise_sentences' not in request.session:
-        all_sentences = list(Sentence.objects.all())
+        client = request.user.profile.client
+        all_sentences = list(Sentence.objects.filter(client=client))
         random.shuffle(all_sentences)
         request.session['exercise_sentences'] = [s.id for s in all_sentences[:30]]
         request.session['progress'] = 0  # Start at 0
