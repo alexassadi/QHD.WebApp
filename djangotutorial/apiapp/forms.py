@@ -68,7 +68,7 @@ class UserRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'client_id']
+        fields = ['username', 'email', 'password']
 
     def clean_client_id(self):
         client_id = self.cleaned_data['client_id'].strip().upper()  # ✅ enforce uppercase
