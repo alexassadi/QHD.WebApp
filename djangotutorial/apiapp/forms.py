@@ -71,7 +71,7 @@ class UserRegistrationForm(forms.ModelForm):
         fields = ['username', 'email', 'password']
 
     def clean_client_id(self):
-        client_id = self.cleaned_data['client_id'].strip().upper()  # ✅ enforce uppercase
+        client_id = self.cleaned_data['client_id']  # ✅ enforce uppercase
         try:
             client = Client.objects.get(name=client_id)  # match must be exact
         except Client.DoesNotExist:
