@@ -514,10 +514,9 @@ def register(request):
 
             # ✅ Use the actual Client object returned by cleaned_data
             client = form.clean_client_id()
-            is_admin = form.cleaned_data['is_admin']
 
             # Create the Profile
-            Profile.objects.create(user=user, client=client, is_admin=is_admin)
+            Profile.objects.create(user=user, client=client, is_admin=False)
 
             return redirect('login')
     else:
