@@ -508,9 +508,19 @@ def register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])  # hash the password
+            user.save()
+
+            # ✅ Use the actual Client object returned by cleaned_data
+            client = form.cleaned_data['client_id']
+            is_admin = form.cleaned_data['is_admin']
+
+            # Create the Profile
+            Profile.objects.create(user=user, client=client, is_admin=is_admin)
+
             return redirect('login')
     else:
         form = UserRegistrationForm()
-
+    
     return render(request, 'registration/register.html', {'form': form})
