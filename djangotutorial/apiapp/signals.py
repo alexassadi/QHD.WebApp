@@ -6,7 +6,8 @@ from .models import Profile
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):
     if created and not hasattr(instance, 'profile'):
-        Profile.objects.create(user=instance)
+        # only auto-create if not already done manually
+        Profile.objects.create(user=instance, client='QHD_TEST')
 
 @receiver(post_save, sender=User)
 def save_profile(sender, instance, **kwargs):

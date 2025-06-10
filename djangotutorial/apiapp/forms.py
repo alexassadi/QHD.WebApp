@@ -79,12 +79,12 @@ class UserRegistrationForm(forms.ModelForm):
         return client
 
     def save(self, commit=True):
+        client = self.cleaned_data['client_id']
         user = super().save(commit=False)
         user.set_password(self.cleaned_data['password'])
 
         if commit:
             user.save()
-            client = self.cleaned_data['client_id']  # now a Client instance
             Profile.objects.create(user=user, client=client, is_admin=False)
 
         return user
