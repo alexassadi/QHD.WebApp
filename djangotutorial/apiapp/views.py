@@ -6,7 +6,7 @@ import sys
 import os
 from pathlib import Path
 import subprocess
-from .models import Sentence, Word, PronunciationResult
+from .models import Sentence, Word, PronunciationResult, Profile, Client, User
 from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 import re
