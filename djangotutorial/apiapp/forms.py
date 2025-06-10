@@ -1,5 +1,6 @@
 from django import forms
-from .models import Sentence
+from .models import Sentence, Client, Profile
+from django.contrib.auth.models import User
 
 class SentenceGenerationForm(forms.Form):
     def __init__(self, *args, **kwargs):
@@ -60,3 +61,30 @@ class PracticeForm(forms.Form):
         widget=forms.HiddenInput(),
         required=False  # ✅ No longer required during sentence selection
     )
+
+class UserRegistrationForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+    client_id = forms.CharField(label="Client ID", required=True)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password', 'client_id']
+
+    def clean_client_id(self):
+        client_id = self.cleaned_data['client_id'].strip().upper()  # ✅ enforce uppercase
+        try:
+            client = Client.objects.get(name=client_id)  # match must be exact
+        except Client.DoesNotExist:
+            raise forms.ValidationError("❌ The client ID you entered does not exist.")
+        return client
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data['password'])
+
+        if commit:
+            user.save()
+            client = self.cleaned_data['client_id']  # now a Client instance
+            Profile.objects.create(user=user, client=client, is_admin=False)
+
+        return user

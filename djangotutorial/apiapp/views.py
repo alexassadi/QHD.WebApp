@@ -1,7 +1,7 @@
 import json
 import base64
 from django.shortcuts import render, redirect
-from .forms import SentenceGenerationForm, PronunciationForm, PracticeForm
+from .forms import SentenceGenerationForm, PronunciationForm, PracticeForm, UserRegistrationForm
 import sys
 import os
 from pathlib import Path
@@ -503,3 +503,14 @@ def initial_assessment(request):
 @login_required
 def assessment_complete(request):
     return render(request, 'apiapp/assessment_complete.html')
+
+def register(request):
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+        form = UserRegistrationForm()
+
+    return render(request, 'registration/register.html', {'form': form})

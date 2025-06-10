@@ -1,0 +1,53 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 400px; margin: auto;">
+    <h2>📝 Create an Account</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <p>
+            <label for="{{ form.username.id_for_label }}">Username:</label><br>
+            {{ form.username }}
+        </p>
+
+        <p>
+            <label for="{{ form.email.id_for_label }}">Email:</label><br>
+            {{ form.email }}
+        </p>
+
+        <p>
+            <label for="{{ form.password.id_for_label }}">Password:</label><br>
+            {{ form.password }}
+        </p>
+
+        <p>
+            <label for="{{ form.client_id.id_for_label }}">Enter your Client ID:</label><br>
+            {{ form.client_id }}
+        </p>
+
+        {% if form.errors %}
+            <ul style="color: red;">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <button type="submit" style="margin-top: 10px;">Register</button>
+    </form>
+
+    <p style="margin-top: 1em;">
+        Already have an account? <a href="{% url 'login' %}">Log in</a>
+    </p>
+</div>
+{% endblock %}
