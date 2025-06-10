@@ -513,7 +513,7 @@ def register(request):
             user.save()
 
             # ✅ Use the actual Client object returned by cleaned_data
-            client = form.cleaned_data['client_id']
+            client = form.clean_client_id()
             is_admin = form.cleaned_data['is_admin']
 
             # Create the Profile
