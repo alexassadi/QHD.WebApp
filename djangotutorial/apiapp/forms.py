@@ -79,7 +79,8 @@ class UserRegistrationForm(forms.ModelForm):
         return client
 
     def save(self, commit=True):
-        client = self.cleaned_data['client_id']
+        #client = self.cleaned_data['client_id']
+        client = self.clean_client_id()
         user = super().save(commit=False)
         user.set_password(self.cleaned_data['password'])
 
