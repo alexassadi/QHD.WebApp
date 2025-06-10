@@ -54,6 +54,11 @@ def generate_sentences(request):
     sentences = []
     error = None
     task_id = None
+    client = request.user.profile.client
+
+    if client.has_generated_sentences:
+        messages.error(request, "❌ Your sentence set is already locked. You can only edit/update the current set.")
+        return redirect("edit_terms_page")  # Replace with your actual edit page URL name
 
     if request.method == 'POST':
         form = SentenceGenerationForm(request.POST)
@@ -69,6 +74,8 @@ def generate_sentences(request):
             )
 
             messages.success(request, f"✅ {len(vocab_list)} terms submitted successfully!")
+            client.has_generated_sentences = True  # ✅ Mark as locked
+            client.save()
             return redirect('generate_sentences')  # PRG pattern
         else:
             error = "Please correct the errors below."

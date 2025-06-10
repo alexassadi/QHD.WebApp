@@ -5,7 +5,7 @@ import openai_func as oa
 
 User = get_user_model()
 
-def generate_sentences_task(vocab_list, user_id):
+def generate_sentences_task(vocab_list, user_id, client, hook=None):
     user = User.objects.get(id=user_id)
 
     vocab_list = " ".join(vocab_list)
@@ -18,6 +18,7 @@ def generate_sentences_task(vocab_list, user_id):
         if isinstance(sentence, list) and len(sentence) == 2:
             Sentence.objects.create(
                 text=sentence[0],
+                client=client,
                 phonemes=sentence[1],
                 user=user
             )

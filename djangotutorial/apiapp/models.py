@@ -14,6 +14,7 @@ import s3_func as s3
 class Client(models.Model):
     name = models.CharField(max_length=255, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    has_generated_sentences = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
