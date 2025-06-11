@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
-from .models import Sentence, PronunciationResult, Client, Profile
+from .models import Sentence, PronunciationResult, Client, Profile, Word
 
 # Inline admin to include Profile in the User admin
 class ProfileInline(admin.StackedInline):
@@ -33,6 +33,7 @@ admin.site.register(User, UserAdmin)
 # Existing model admin registrations
 admin.site.register(Sentence)
 admin.site.register(PronunciationResult)
+admin.site.register(Word)
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
