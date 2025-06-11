@@ -1,0 +1,52 @@
+<form method="POST">
+    {% csrf_token %}
+    <div style="text-align: center; font-size: 1.25rem; font-weight: 500; margin-bottom: 1em;">
+        <p style="margin: 0.5em 0 0;">
+            Update the terms below. To edit a word, click the EDIT button beside it.
+        </p>
+    </div>
+
+    <div style="display: flex; gap: 16px; justify-content: center;">
+        <div style="flex: 1;">
+            {% for i in left_indices %}
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <span style="width: 28px; text-align: right;">{{ i }}</span>
+                {{ form.word_[i]|as_widget(attrs={"class": "term-input", "readonly": "readonly"}) }}
+                <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
+            </div>
+            {% endfor %}
+        </div>
+        <div style="flex: 1;">
+            {% for i in middle_indices %}
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <span style="width: 28px; text-align: right;">{{ i }}</span>
+                {{ form.word_[i]|as_widget(attrs={"class": "term-input", "readonly": "readonly"}) }}
+                <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
+            </div>
+            {% endfor %}
+        </div>
+        <div style="flex: 1;">
+            {% for i in right_indices %}
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <span style="width: 28px; text-align: right;">{{ i }}</span>
+                {{ form.word_[i]|as_widget(attrs={"class": "term-input", "readonly": "readonly"}) }}
+                <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div style="margin-top: 1.5em; text-align: center;">
+        <button type="submit" class="btn btn-primary">UPDATE</button>
+    </div>
+</form>
+
+<script>
+function unlockInput(inputId) {
+    const input = document.getElementById(inputId);
+    if (input) {
+        input.removeAttribute('readonly');
+        input.focus();
+    }
+}
+</script>

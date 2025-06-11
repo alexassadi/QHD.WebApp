@@ -88,3 +88,18 @@ class UserRegistrationForm(forms.ModelForm):
             Profile.objects.create(user=user, client=client, is_admin=False)
 
         return user
+    
+class EditTermsForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        word_count = kwargs.pop('word_count', 50)
+        super().__init__(*args, **kwargs)
+
+        for i in range(1, word_count + 1):
+            self.fields[f'word_{i}'] = forms.CharField(
+                required=True,
+                max_length=50,
+                label=f'Word {i}',
+                widget=forms.TextInput(attrs={
+                    'class': 'term-input',
+                })
+            )
