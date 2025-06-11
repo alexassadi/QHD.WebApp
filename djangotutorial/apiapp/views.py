@@ -25,8 +25,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 import time
 from django.contrib import messages
-import enchant
-
+from spellchecker import SpellChecker
 
 # Add the utilities folder (2 levels up) to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
@@ -535,58 +534,63 @@ def register(request):
 
 @login_required
 def edit_terms(request):
-    client = request.user.profile.client
-    existing_words = list(Word.objects.filter(client=client).order_by('id'))
+    profile = request.user.profile
+    client = profile.client
 
-    if not client.has_generated_sentences:
-        return redirect('generate_sentences')
+    # Get all existing words for the client
+    words = list(Word.objects.filter(client=client).order_by("position"))
+    initial_data = {f"word_{i+1}": word.text for i, word in enumerate(words)}
 
-    initial_data = {f'word_{i+1}': word.text for i, word in enumerate(existing_words)}
-    form = EditTermsForm(request.POST or None, initial=initial_data, word_count=50)
+    if request.method == "POST":
+        form = EditTermsForm(request.POST)
+        if form.is_valid():
+            updated_words = []
+            seen = set()
+            spell = SpellChecker()
+            errors = []
 
-    if request.method == 'POST' and form.is_valid():
-        word_texts = []
-        dictionary = enchant.Dict("en_GB")
+            for i in range(1, 51):
+                field_name = f"word_{i}"
+                term = form.cleaned_data.get(field_name, "").strip()
 
-        for i in range(1, 51):
-            field_name = f'word_{i}'
-            word = form.cleaned_data[field_name].strip()
-            if word in word_texts:
-                form.add_error(field_name, "❌ This word or term is duplicated.")
-            else:
-                word_texts.append(word)
+                if not term:
+                    errors.append(f"❌ Term {i} is empty.")
+                    continue
 
-            for w in word.split():
-                if not dictionary.check(w):
-                    form.add_error(field_name, f"❌ The word '{w}' appears to be misspelt or doesn't exist.")
+                # Check for uniqueness
+                if term.lower() in seen:
+                    errors.append(f"❌ Term {i} ('{term}') is duplicated.")
+                seen.add(term.lower())
 
-        if form.errors:
-            return render(request, 'apiapp/edit_terms.html', {
-                'form': form,
-                'left_indices': list(range(1, 51, 3)),   # [1, 3, 5, ..., 49]
-                'middle_indices': list(range(2, 51, 3)),  # [2, 4, 6, ..., 50]
-                'right_indices': list(range(3, 51, 3)),  # [2, 4, 6, ..., 50]
-            })
+                # Spell checking
+                misspelled = spell.unknown(term.split())
+                if misspelled:
+                    errors.append(f"❌ Term {i} ('{term}') contains a misspelled word: {', '.join(misspelled)}")
 
-        for i in range(1, 51):
-            field_name = f'word_{i}'
-            new_text = form.cleaned_data[field_name].strip()
-            word_obj = existing_words[i - 1]
+                updated_words.append(term)
 
-            if word_obj.text != new_text:
-                # Delete old sentences and their audio files
-                sentences = Sentence.objects.filter(client=client, term=word_obj.text)
-                for sentence in sentences:
+            if errors:
+                for e in errors:
+                    messages.error(request, e)
+                return render(request, "apiapp/edit_terms.html", {"form": form})
+
+            # Delete old words, sentences, and audio files
+            for word in words:
+                for sentence in word.sentence_set.all():
                     if sentence.audio_url:
                         s3.delete_s3_file_from_url(sentence.audio_url)
                     sentence.delete()
+                word.delete()
 
-                # Update word
-                word_obj.text = new_text
-                word_obj.save()
+            # Create new word records
+            for i, term in enumerate(updated_words):
+                Word.objects.create(client=client, text=term, position=i+1)
 
-        messages.success(request, "✅ Your words and sentences were updated. Please regenerate sentences manually if needed.")
-        return redirect('edit_terms_page')
+            messages.success(request, "✅ Terms updated successfully!")
+            return redirect("edit_terms")
+
+    else:
+        form = EditTermsForm(initial=initial_data)
 
     return render(request, 'apiapp/edit_terms.html', {
         'form': form,
