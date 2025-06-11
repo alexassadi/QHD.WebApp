@@ -16,6 +16,13 @@
     {% endif %}
 
     <form method="POST">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <p class="{{ message.tags }}">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
         {% csrf_token %}
         <div style="text-align: center; font-size: 1.25rem; font-weight: 500; margin-bottom: 1em;">
             <p style="margin: 0.5em 0 0;">Enter a maximum of 50 words or terms below (for detailed guidance on the initial selection click here). The words or terms you enter will be used to generate sentences which will be used by your users to improve their pronunciation.</p>
@@ -62,14 +69,6 @@
     <a href="{% url 'practice' %}" class="btn btn-success" style="padding: 10px 20px; text-decoration: none;">
         ➡️ Practice Your Sentences
     </a>
-</div>
-{% endif %}
-
-{% if messages %}
-<div class="messages">
-    {% for message in messages %}
-        <p class="{{ message.tags }}">{{ message }}</p>
-    {% endfor %}
 </div>
 {% endif %}
 {% endblock %}
