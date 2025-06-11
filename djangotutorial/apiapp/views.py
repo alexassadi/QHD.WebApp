@@ -50,6 +50,8 @@ from apiapp.tasks import generate_sentences_task
 from django.http import JsonResponse
 import uuid
 
+from spellchecker import SpellChecker  # At the top of the file
+
 @staff_member_required
 def generate_sentences(request):
     sentences = []
@@ -59,25 +61,46 @@ def generate_sentences(request):
 
     if client.has_generated_sentences:
         messages.error(request, "❌ Your sentence set is already locked. You can only edit/update the current set.")
-        return redirect("edit_terms_page")  # Replace with your actual edit page URL name
+        return redirect("edit_terms_page")
 
     if request.method == 'POST':
         form = SentenceGenerationForm(request.POST)
         if form.is_valid():
             vocab_list = form.get_terms()
+            cleaned_list = [term.strip() for term in vocab_list if term.strip()]
 
-            task_id = async_task(
-                "apiapp.tasks.generate_sentences_task",
-                vocab_list,
-                request.user.id,
-                request.user.profile.client,
-                hook="apiapp.tasks.notify_completion"
-            )
+            # Check 1: Are there any empty fields?
+            if len(cleaned_list) < 50:
+                messages.error(request, "❌ Please complete all 50 word fields.")
+            # Check 2: Are all terms unique?
+            elif len(set(cleaned_list)) != 50:
+                messages.error(request, "❌ All terms must be unique.")
+            else:
+                # Check 3: Are all individual words correctly spelt?
+                spell = SpellChecker()
+                misspelled = []
 
-            messages.success(request, f"✅ {len(vocab_list)} terms submitted successfully!")
-            client.has_generated_sentences = True  # ✅ Mark as locked
-            client.save()
-            return redirect('generate_sentences')  # PRG pattern
+                for term in cleaned_list:
+                    words = term.split()
+                    for word in words:
+                        if word.lower() not in spell:
+                            misspelled.append(word)
+
+                if misspelled:
+                    messages.error(request, f"❌ The following words appear misspelt or invalid: {', '.join(set(misspelled))}")
+                else:
+                    # ✅ All checks passed – proceed
+                    task_id = async_task(
+                        "apiapp.tasks.generate_sentences_task",
+                        cleaned_list,
+                        request.user.id,
+                        client,
+                        hook="apiapp.tasks.notify_completion"
+                    )
+                    messages.success(request, f"✅ {len(cleaned_list)} terms submitted successfully!")
+                    client.has_generated_sentences = True
+                    client.save()
+                    return redirect('generate_sentences')
         else:
             error = "Please correct the errors below."
 
@@ -88,10 +111,11 @@ def generate_sentences(request):
         'form': form,
         'sentences': sentences,
         'error': error,
-        'left_indices': list(range(1, 51, 3)),   # [1, 3, 5, ..., 49]
-        'middle_indices': list(range(2, 51, 3)),  # [2, 4, 6, ..., 50]
-        'right_indices': list(range(3, 51, 3)),  # [2, 4, 6, ..., 50]
+        'left_indices': list(range(1, 51, 3)),
+        'middle_indices': list(range(2, 51, 3)),
+        'right_indices': list(range(3, 51, 3)),
     })
+
 
 import random  # Import to pick random sentences
 
