@@ -54,6 +54,8 @@ def generate_sentences(vocab_list):
         for i in fix_reply:
             nested_sentences.append(i)
 
+        return nested_sentences
+
 def send_and_get_prompt(payload):
     client = openai.OpenAI(api_key=API_KEY)
 
