@@ -41,7 +41,7 @@ def generate_sentences(vocab_list):
 
     nested_sentences = get_sentences_prompt(first_half, second_half)
 
-    while nested_sentences < 50:
+    while len(nested_sentences) < 50:
         temp_list = vocab_list
 
         for sentence in nested_sentences:
