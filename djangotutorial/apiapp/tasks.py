@@ -8,9 +8,7 @@ User = get_user_model()
 def generate_sentences_task(vocab_list, user_id, client, hook=None):
     user = User.objects.get(id=user_id)
 
-    vocab_list = " ".join(vocab_list)
-
-    sentences = oa.initial_prompt(vocab_list)
+    sentences = oa.generate_sentences(vocab_list)
 
     for sentence in sentences:
         print("SAVING:", sentence)  # Debug print
