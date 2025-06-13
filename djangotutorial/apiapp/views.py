@@ -100,7 +100,7 @@ def generate_sentences(request):
                     messages.success(request, f"✅ {len(cleaned_list)} terms submitted successfully!")
                     client.has_generated_sentences = True
                     client.save()
-                    return redirect('generate_sentences')
+                    return redirect('home')
         else:
             error = "Please correct the errors below."
 
