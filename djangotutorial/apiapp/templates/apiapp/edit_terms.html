@@ -22,8 +22,8 @@
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                 <span style="width: 28px; text-align: right;">{{ i }}</span>
                 {% with "word_"|add:i as field_name %}
-                    {{ form[field_name]|as_widget(attrs={"class": "term-input", "readonly": "readonly"}) }}
-                {% endwith %}"
+                    {{ form[field_name].as_widget(attrs={"class": "term-input", "readonly": "readonly"}) }}
+                {% endwith %}
                 <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
             </div>
             {% endfor %}
@@ -33,8 +33,8 @@
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                 <span style="width: 28px; text-align: right;">{{ i }}</span>
                 {% with "word_"|add:i as field_name %}
-                    {{ form[field_name]|as_widget(attrs={"class": "term-input", "readonly": "readonly"}) }}
-                {% endwith %}"
+                    {{ form[field_name].as_widget(attrs={"class": "term-input", "readonly": "readonly"}) }}
+                {% endwith %}
                 <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
             </div>
             {% endfor %}
@@ -44,8 +44,8 @@
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                 <span style="width: 28px; text-align: right;">{{ i }}</span>
                 {% with "word_"|add:i as field_name %}
-                    {{ form[field_name]|as_widget(attrs={"class": "term-input", "readonly": "readonly"}) }}
-                {% endwith %}"
+                    {{ form[field_name].as_widget(attrs={"class": "term-input", "readonly": "readonly"}) }}
+                {% endwith %}
                 <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
             </div>
             {% endfor %}
