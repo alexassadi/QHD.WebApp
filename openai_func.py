@@ -23,7 +23,7 @@ def get_sentences_prompt(first_half,second_half=None):
 
     for item in sentences:
         # Use regex to split on the first " - [" pattern and preserve content
-        match = re.match(r"^(.*?)\s*-\s*\[(.*)\]$", item.strip())
+        match = re.match(r"^(.*?)\s*-\s*\[([^\[\]]+)\]$", item.strip())
         if match:
             sentence = match.group(1).strip()
             phonemes = match.group(2).strip()  # Re-adding the brackets
@@ -41,20 +41,41 @@ def generate_sentences(vocab_list):
 
     nested_sentences = get_sentences_prompt(first_half, second_half)
 
-    while len(nested_sentences) < 50:
-        temp_list = vocab_list
+    used_words = set()
 
-        for sentence in nested_sentences:
-            for word in temp_list:
-                if word.upper() in sentence[0]:
-                    temp_list.remove(word)
+    print(f'After first generation attempt length of list is {len(nested_sentences)}')
 
-        fix_reply = get_sentences_prompt(temp_list)
+    while len(nested_sentences) < 50:   
+        for sentence, _ in nested_sentences:
+            for word in vocab_list:
+                if word.upper() in sentence:
+                    used_words.add(word)
+
+        missing_words = [word for word in vocab_list if word not in used_words]
+
+        print(f'{len(missing_words)} words/sentences missing ({missing_words}), generating now')
+
+        fix_reply = get_sentences_prompt(missing_words)
 
         for i in fix_reply:
             nested_sentences.append(i)
 
-    return nested_sentences
+        print(f'Length of sentence list after adding {len(missing_words)} sentences is now {len(nested_sentences)}')
+
+    seen_words = set()
+    final_sentences = []
+
+    for sentence, phonemes in nested_sentences:
+        for word in vocab_list:
+            if word.upper() in sentence and word not in seen_words:
+                final_sentences.append([sentence, phonemes])
+                seen_words.add(word)
+                break
+
+    # Ensure exactly 50
+    final_sentences = final_sentences[:50]
+
+    return final_sentences
 
 def send_and_get_prompt(payload):
     client = openai.OpenAI(api_key=API_KEY)
