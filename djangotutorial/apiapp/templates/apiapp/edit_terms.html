@@ -1,61 +1,86 @@
-<form method="POST">
-    {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-                <p class="{{ message.tags }}" style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %}; font-weight: 500;">
-                    {{ message }}
-                </p>
-            {% endfor %}
+{% extends 'layout.html' %}
+{% load form_extras %}
+
+{% block title %}
+    Edit Sentences
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h1>✏️ Edit Sentences</h1>
+
+    {% if error %}
+        <div style="color: red; margin-bottom: 1em;">
+            ⚠️ {{ error }}
         </div>
     {% endif %}
 
-    {% csrf_token %}
-    <div style="text-align: center; font-size: 1.25rem; font-weight: 500; margin-bottom: 1em;">
-        <p style="margin: 0.5em 0 0;">
-            Update the terms below. To edit a word, click the EDIT button beside it.
-        </p>
+    {% if form.non_field_errors %}
+    <div class="form-errors">
+        {% for error in form.non_field_errors %}
+        <p style="color: red;">❌ {{ error }}</p>
+        {% endfor %}
     </div>
+    {% endif %}
 
-    <div style="display: flex; gap: 16px; justify-content: center;">
-        <div style="flex: 1;">
-            {% for i in left_indices %}
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                <span style="width: 28px; text-align: right;">{{ i }}</span>
-                {% with "word_"|add:i as field_name %}
-                    {{ form[field_name].as_widget(attrs={"class": "term-input", "readonly": "readonly"}) }}
-                {% endwith %}
-                <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
+    <form method="POST">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <p class="{{ message.tags }}" style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %}; font-weight: 500;">
+                        {{ message }}
+                    </p>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
-        <div style="flex: 1;">
-            {% for i in middle_indices %}
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                <span style="width: 28px; text-align: right;">{{ i }}</span>
-                {% with "word_"|add:i as field_name %}
-                    {{ form[field_name].as_widget(attrs={"class": "term-input", "readonly": "readonly"}) }}
-                {% endwith %}
-                <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
-            </div>
-            {% endfor %}
-        </div>
-        <div style="flex: 1;">
-            {% for i in right_indices %}
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                <span style="width: 28px; text-align: right;">{{ i }}</span>
-                {% with "word_"|add:i as field_name %}
-                    {{ form[field_name].as_widget(attrs={"class": "term-input", "readonly": "readonly"}) }}
-                {% endwith %}
-                <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
+        {% endif %}
 
-    <div style="margin-top: 1.5em; text-align: center;">
-        <button type="submit" class="btn btn-primary">UPDATE</button>
-    </div>
-</form>
+        {% csrf_token %}
+        <div style="text-align: center; font-size: 1.25rem; font-weight: 500; margin-bottom: 1em;">
+            <p style="margin: 0.5em 0 0;">
+                Update the terms below. To edit a word, click the EDIT button beside it.
+            </p>
+        </div>
+
+        <div style="display: flex; gap: 16px; justify-content: center;">
+            <div style="flex: 1;">
+                {% for i in left_indices %}
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <span style="width: 28px; text-align: right;">{{ i }}</span>
+                    {% with "word_"|add:i as field_name %}
+                        {{ form[field_name]|add_class:"term-input"|attr:"readonly:readonly" }}
+                    {% endwith %}
+                    <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
+                </div>
+                {% endfor %}
+            </div>
+            <div style="flex: 1;">
+                {% for i in middle_indices %}
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <span style="width: 28px; text-align: right;">{{ i }}</span>
+                    {% with "word_"|add:i as field_name %}
+                        {{ form[field_name]|add_class:"term-input"|attr:"readonly:readonly" }}
+                    {% endwith %}
+                    <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
+                </div>
+                {% endfor %}
+            </div>
+            <div style="flex: 1;">
+                {% for i in right_indices %}
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <span style="width: 28px; text-align: right;">{{ i }}</span>
+                    {% with "word_"|add:i as field_name %}
+                        {{ form[field_name]|add_class:"term-input"|attr:"readonly:readonly" }}
+                    {% endwith %}
+                    <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div style="margin-top: 1.5em; text-align: center;">
+            <button type="submit" class="btn btn-primary">UPDATE</button>
+        </div>
+    </form>
 
 <script>
 function unlockInput(inputId) {
