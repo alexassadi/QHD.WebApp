@@ -1,14 +1,13 @@
 from django import template
+from django.utils.html import format_html
+
 register = template.Library()
 
-@register.filter(name='add_class')
+@register.filter
 def add_class(field, css_class):
     return field.as_widget(attrs={"class": css_class})
 
-@register.filter(name='attr')
+@register.filter
 def attr(field, args):
-    attrs = {}
-    for arg in args.split(','):
-        key, val = arg.split(':')
-        attrs[key.strip()] = val.strip()
-    return field.as_widget(attrs=attrs)
+    key, val = args.split(":")
+    return field.as_widget(attrs={key: val})
