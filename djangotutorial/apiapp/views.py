@@ -573,7 +573,7 @@ def edit_terms(request):
     client = profile.client
 
     # Get all existing words for the client
-    words = list(Word.objects.filter(client=client).order_by("position"))
+    words = list(Term.objects.filter(client=client).order_by("position"))
     initial_data = {f"word_{i+1}": word.text for i, word in enumerate(words)}
 
     if request.method == "POST":
