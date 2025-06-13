@@ -61,7 +61,7 @@ def generate_sentences(request):
 
     if client.has_generated_sentences:
         messages.error(request, "❌ Your sentence set is already locked. You can only edit/update the current set.")
-        return redirect("edit_terms_page")
+        return redirect("edit_terms")
 
     if request.method == 'POST':
         form = SentenceGenerationForm(request.POST)
