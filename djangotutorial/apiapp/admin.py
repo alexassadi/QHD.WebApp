@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
-from .models import Sentence, PronunciationResult, Client, Profile, Word
+from .models import Sentence, PronunciationResult, Client, Profile, Word, Term
 
 # Inline admin to include Profile in the User admin
 class ProfileInline(admin.StackedInline):
@@ -43,3 +43,10 @@ class ClientAdmin(admin.ModelAdmin):
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'client', 'is_admin')
     list_filter = ('client', 'is_admin')
+
+@admin.register(Term)
+class TermAdmin(admin.ModelAdmin):
+    list_display = ('term', 'position', 'client', 'user', 'created_at')
+    list_filter = ('client',)
+    search_fields = ('term',)
+    ordering = ('client', 'position')

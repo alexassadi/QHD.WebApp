@@ -6,7 +6,7 @@ import sys
 import os
 from pathlib import Path
 import subprocess
-from .models import Sentence, Word, PronunciationResult, Profile, Client, User
+from .models import Sentence, Word, PronunciationResult, Profile, Client, User, Term
 from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 import re
@@ -66,8 +66,19 @@ def generate_sentences(request):
     if request.method == 'POST':
         form = SentenceGenerationForm(request.POST)
         if form.is_valid():
-            vocab_list = form.get_terms()
-            cleaned_list = [term.strip() for term in vocab_list if term.strip()]
+            cleaned_list = []
+            Term.objects.filter(client=client).delete()  # Clear any previous terms
+
+            for i in range(1, 51):
+                term_text = form.cleaned_data.get(f'word_{i}', '').strip()
+                if term_text:
+                    Term.objects.create(
+                        client=client,
+                        user=request.user,
+                        term=term_text,
+                        position=i
+                    )
+                    cleaned_list.append(term_text)
 
             # Check 1: Are there any empty fields?
             if len(cleaned_list) < 50:

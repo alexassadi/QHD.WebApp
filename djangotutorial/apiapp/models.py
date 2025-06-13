@@ -84,3 +84,18 @@ class PronunciationResult(models.Model):
     word_scores = models.JSONField()
     phoneme_scores = models.JSONField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+class Term(models.Model):
+    client = models.ForeignKey("Client", on_delete=models.CASCADE, related_name="terms")
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    term = models.CharField(max_length=100)
+    position = models.PositiveIntegerField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('client', 'position')
+        ordering = ['position']
+
+    def __str__(self):
+        return f"{self.term} (Client: {self.client.name}, Pos: {self.position})"
