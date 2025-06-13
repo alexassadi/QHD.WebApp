@@ -21,7 +21,9 @@
             {% for i in left_indices %}
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                 <span style="width: 28px; text-align: right;">{{ i }}</span>
-                {{ form["word_"|add:i]|as_widget(attrs={"class": "term-input", "readonly": "readonly"}) }}
+                {% with "word_"|add:i as field_name %}
+                    {{ form[field_name]|as_widget(attrs={"class": "term-input", "readonly": "readonly"}) }}
+                {% endwith %}"
                 <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
             </div>
             {% endfor %}
@@ -30,7 +32,9 @@
             {% for i in middle_indices %}
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                 <span style="width: 28px; text-align: right;">{{ i }}</span>
-                {{ form["word_"|add:i]|as_widget(attrs={"class": "term-input", "readonly": "readonly"}) }}
+                {% with "word_"|add:i as field_name %}
+                    {{ form[field_name]|as_widget(attrs={"class": "term-input", "readonly": "readonly"}) }}
+                {% endwith %}"
                 <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
             </div>
             {% endfor %}
@@ -39,7 +43,9 @@
             {% for i in right_indices %}
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                 <span style="width: 28px; text-align: right;">{{ i }}</span>
-                {{ form["word_"|add:i]|as_widget(attrs={"class": "term-input", "readonly": "readonly"}) }}
+                {% with "word_"|add:i as field_name %}
+                    {{ form[field_name]|as_widget(attrs={"class": "term-input", "readonly": "readonly"}) }}
+                {% endwith %}"
                 <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
             </div>
             {% endfor %}
