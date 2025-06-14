@@ -47,8 +47,6 @@
                 {% with field_name="word_"|add:i|stringformat:"s" %}
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                         <span style="width: 28px; text-align: right;">{{ i }}</span>
-                            <p>Resolved field: {{ field_name }}</p>
-                            {{ form }}
                             {{ form.field_name }}
                         <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
                     </div>
@@ -60,8 +58,6 @@
                     {% with field_name="word_"|add:i|stringformat:"s" %}
                         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                             <span style="width: 28px; text-align: right;">{{ i }}</span>
-                                <p>Resolved field: {{ field_name }}</p>
-                                {{ form }}
                                 {{ form.field_name }}
                             <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
                         </div>
@@ -73,8 +69,6 @@
                     {% with field_name="word_"|add:i|stringformat:"s" %}
                         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                             <span style="width: 28px; text-align: right;">{{ i }}</span>
-                                <p>Resolved field: {{ field_name }}</p>
-                                {{ form }}
                                 {{ form.field_name }}
                             <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
                         </div>
