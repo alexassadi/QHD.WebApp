@@ -493,7 +493,7 @@ def initial_assessment(request):
 
     # Check if progress is complete
     if progress >= len(sentence_ids):
-        return redirect('completion_page')  # Redirect to success/completion page
+        return redirect('assessment_complete')  # Redirect to success/completion page
 
     # Retrieve the next sentence
     try:
