@@ -91,10 +91,9 @@ class UserRegistrationForm(forms.ModelForm):
     
 class EditTermsForm(forms.Form):
     def __init__(self, *args, **kwargs):
-        word_count = kwargs.pop('word_count', 50)
         super().__init__(*args, **kwargs)
 
-        for i in range(1, word_count + 1):
+        for i in range(1, 51):
             self.fields[f'word_{i}'] = forms.CharField(
                 required=True,
                 max_length=50,

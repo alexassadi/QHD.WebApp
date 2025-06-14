@@ -610,7 +610,7 @@ def edit_terms(request):
                 return render(request, "apiapp/edit_terms.html", {"form": form})
 
             # Delete old words, sentences, and audio files
-            for word in words:
+            for word in terms:
                 for sentence in word.sentence_set.all():
                     if sentence.audio_url:
                         s3.delete_s3_file_from_url(sentence.audio_url)
