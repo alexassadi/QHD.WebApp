@@ -1,5 +1,6 @@
 {% extends 'layout.html' %}
 {% load form_extras %}
+{% load custom_tags %}
 
 {% block title %}
     Edit Sentences
@@ -44,35 +45,35 @@
         <div style="display: flex; gap: 16px; justify-content: center;">
             <div style="flex: 1;">
                 {% for i in left_indices %}
-                {% with field_name="word_"|add:i|stringformat:"s" %}
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
                         <span style="width: 28px; text-align: right;">{{ i }}</span>
-                            {{ form.field_name }}
+                        {% with field=form|get_item:"word_"|add:i %}
+                            {{ field }}
+                        {% endwith %}
                         <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
                     </div>
-                {% endwith %}
                 {% endfor %}
             </div>
             <div style="flex: 1;">
                 {% for i in middle_indices %}
-                    {% with field_name="word_"|add:i|stringformat:"s" %}
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                            <span style="width: 28px; text-align: right;">{{ i }}</span>
-                                {{ form.field_name }}
-                            <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
-                        </div>
-                    {% endwith %}
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="width: 28px; text-align: right;">{{ i }}</span>
+                        {% with field=form|get_item:"word_"|add:i %}
+                            {{ field }}
+                        {% endwith %}
+                        <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
+                    </div>
                 {% endfor %}
             </div>
             <div style="flex: 1;">
                 {% for i in right_indices %}
-                    {% with field_name="word_"|add:i|stringformat:"s" %}
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                            <span style="width: 28px; text-align: right;">{{ i }}</span>
-                                {{ form.field_name }}
-                            <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
-                        </div>
-                    {% endwith %}
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="width: 28px; text-align: right;">{{ i }}</span>
+                        {% with field=form|get_item:"word_"|add:i %}
+                            {{ field }}
+                        {% endwith %}
+                        <button type="button" class="edit-btn" onclick="unlockInput('id_word_{{ i }}')">EDIT</button>
+                    </div>
                 {% endfor %}
             </div>
         </div>
