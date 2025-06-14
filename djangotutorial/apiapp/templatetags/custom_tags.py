@@ -8,5 +8,8 @@ def form_field(form, prefix, index):
     return form[key]
 
 @register.filter
-def get_item(dictionary, key):
-    return dictionary.get(key)
+def get_item(bound_form, key):
+    try:
+        return bound_form[key]
+    except (KeyError, AttributeError):
+        return ""
