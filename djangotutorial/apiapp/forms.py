@@ -97,7 +97,6 @@ class EditTermsForm(forms.Form):
             self.fields[f'word_{i}'] = forms.CharField(
                 required=True,
                 max_length=50,
-                label=f'Word {i}',
                 widget=forms.TextInput(attrs={
                     'class': 'term-input',
                 })
